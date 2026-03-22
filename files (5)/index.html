@@ -370,98 +370,119 @@ body { font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-seri
   <canvas id="gameCanvas"></canvas>
   <div id="game-overlay">
     <div class="ov">
-      <!-- monster characters popping out of top -->
+      <!-- cute space characters -->
       <div class="ov-monsters">
-        <!-- LEFT monster — tall bandaged creature holding a toy -->
-        <svg width="110" height="130" viewBox="0 0 110 130" xmlns="http://www.w3.org/2000/svg" style="margin-right:-10px;flex-shrink:0;">
-          <!-- body wrapped in bandages -->
-          <rect x="30" y="55" width="38" height="50" rx="8" fill="#c8b48a"/>
-          <rect x="30" y="55" width="38" height="7" rx="2" fill="#b09a6a"/>
-          <rect x="30" y="68" width="38" height="5" rx="2" fill="#b09a6a"/>
-          <rect x="30" y="81" width="38" height="5" rx="2" fill="#b09a6a"/>
-          <rect x="30" y="94" width="38" height="5" rx="2" fill="#b09a6a"/>
-          <!-- worn label on chest -->
-          <rect x="36" y="62" width="26" height="20" rx="3" fill="#d4b87a" stroke="#a08050" stroke-width="1"/>
-          <rect x="38" y="65" width="22" height="3" rx="1" fill="#a08050" opacity="0.5"/>
-          <rect x="38" y="70" width="16" height="2" rx="1" fill="#a08050" opacity="0.4"/>
-          <rect x="38" y="74" width="19" height="2" rx="1" fill="#a08050" opacity="0.4"/>
-          <!-- neck -->
-          <rect x="40" y="44" width="18" height="14" rx="5" fill="#b8a478"/>
-          <!-- head — long oval -->
-          <ellipse cx="49" cy="32" rx="20" ry="22" fill="#c8b48a"/>
-          <ellipse cx="49" cy="30" rx="17" ry="19" fill="#d8c49a"/>
-          <!-- bandage on head -->
-          <rect x="29" y="24" width="40" height="7" rx="3" fill="#e0d0a8" opacity="0.9"/>
-          <rect x="29" y="16" width="40" height="5" rx="2" fill="#e0d0a8" opacity="0.8"/>
-          <!-- eyes — big googly -->
-          <ellipse cx="42" cy="32" rx="7" ry="8" fill="white"/>
-          <ellipse cx="56" cy="32" rx="7" ry="8" fill="white"/>
-          <circle cx="43" cy="33" r="4" fill="#3a2810"/>
-          <circle cx="57" cy="33" r="4" fill="#3a2810"/>
-          <circle cx="44" cy="31" r="1.5" fill="white"/>
-          <circle cx="58" cy="31" r="1.5" fill="white"/>
-          <!-- teeth smile -->
-          <path d="M40,44 Q49,50 58,44" stroke="#8a6a40" stroke-width="1.5" fill="none"/>
-          <rect x="43" y="44" width="5" height="5" rx="1" fill="white" stroke="#8a6a40" stroke-width="0.8"/>
-          <rect x="50" y="44" width="5" height="5" rx="1" fill="white" stroke="#8a6a40" stroke-width="0.8"/>
-          <!-- left arm raised holding toy -->
-          <path d="M30,70 Q10,55 8,40" stroke="#c8b48a" stroke-width="10" stroke-linecap="round" fill="none"/>
-          <path d="M30,70 Q10,55 8,40" stroke="#b09a6a" stroke-width="3" stroke-linecap="round" fill="none" stroke-dasharray="4,4"/>
-          <!-- toy (little bear) -->
-          <circle cx="8" cy="34" r="8" fill="#d4a060"/>
-          <circle cx="4" cy="28" r="4" fill="#d4a060"/>
-          <circle cx="12" cy="28" r="4" fill="#d4a060"/>
-          <circle cx="8" cy="34" r="5" fill="#c09050"/>
-          <!-- right arm down -->
-          <path d="M68,75 Q82,82 86,95" stroke="#c8b48a" stroke-width="10" stroke-linecap="round" fill="none"/>
-          <path d="M68,75 Q82,82 86,95" stroke="#b09a6a" stroke-width="3" stroke-linecap="round" fill="none" stroke-dasharray="4,4"/>
-          <!-- legs -->
-          <rect x="33" y="100" width="13" height="22" rx="5" fill="#b09a6a"/>
-          <rect x="50" y="100" width="13" height="22" rx="5" fill="#b09a6a"/>
-          <ellipse cx="39" cy="122" rx="9" ry="5" fill="#908060"/>
-          <ellipse cx="56" cy="122" rx="9" ry="5" fill="#908060"/>
+        <!-- LEFT — cute chubby astronaut -->
+        <svg width="105" height="128" viewBox="0 0 105 128" xmlns="http://www.w3.org/2000/svg" style="margin-right:-8px;flex-shrink:0;">
+          <!-- shadow -->
+          <ellipse cx="52" cy="124" rx="22" ry="5" fill="rgba(0,0,0,0.25)"/>
+          <!-- boots -->
+          <ellipse cx="38" cy="116" rx="13" ry="7" fill="#3a4a6a"/>
+          <ellipse cx="66" cy="116" rx="13" ry="7" fill="#3a4a6a"/>
+          <rect x="28" y="100" width="18" height="18" rx="6" fill="#4a5a7a"/>
+          <rect x="58" y="100" width="18" height="18" rx="6" fill="#4a5a7a"/>
+          <!-- body — puffy white suit -->
+          <ellipse cx="52" cy="82" rx="28" ry="26" fill="#e8eef8"/>
+          <ellipse cx="52" cy="82" rx="24" ry="22" fill="#f0f4fc"/>
+          <!-- suit details -->
+          <rect x="44" y="72" width="16" height="20" rx="5" fill="#d0d8f0"/>
+          <circle cx="52" cy="78" r="5" fill="#a0b8e8" opacity="0.8"/>
+          <rect x="36" y="76" width="8" height="12" rx="4" fill="#c8d4ec"/>
+          <rect x="60" y="76" width="8" height="12" rx="4" fill="#c8d4ec"/>
+          <!-- arms -->
+          <ellipse cx="24" cy="78" rx="10" ry="7" fill="#e0e8f8" transform="rotate(-30 24 78)"/>
+          <ellipse cx="80" cy="72" rx="10" ry="7" fill="#e0e8f8" transform="rotate(20 80 72)"/>
+          <!-- wave hand right -->
+          <circle cx="86" cy="64" r="7" fill="#f8c090"/>
+          <ellipse cx="86" cy="57" rx="3" ry="5" fill="#f8c090"/>
+          <ellipse cx="92" cy="59" rx="2.5" ry="4" fill="#f8c090" transform="rotate(15 92 59)"/>
+          <ellipse cx="80" cy="59" rx="2.5" ry="4" fill="#f8c090" transform="rotate(-15 80 59)"/>
+          <!-- helmet -->
+          <circle cx="52" cy="48" r="26" fill="#d8e4f8"/>
+          <circle cx="52" cy="48" r="22" fill="#1a2a50"/>
+          <!-- visor shine -->
+          <circle cx="52" cy="48" r="22" fill="url(#vg)" opacity="0.7"/>
+          <defs>
+            <radialGradient id="vg" cx="40%" cy="35%">
+              <stop offset="0%" stop-color="#6090ff" stop-opacity="0.6"/>
+              <stop offset="100%" stop-color="#0a1030" stop-opacity="0.9"/>
+            </radialGradient>
+          </defs>
+          <!-- visor reflection -->
+          <ellipse cx="42" cy="38" rx="8" ry="5" fill="rgba(255,255,255,0.18)" transform="rotate(-20 42 38)"/>
+          <!-- cute eyes through visor -->
+          <circle cx="44" cy="48" r="6" fill="white"/>
+          <circle cx="60" cy="48" r="6" fill="white"/>
+          <circle cx="45" cy="49" r="3.5" fill="#1a3a8a"/>
+          <circle cx="61" cy="49" r="3.5" fill="#1a3a8a"/>
+          <circle cx="46" cy="47" r="1.2" fill="white"/>
+          <circle cx="62" cy="47" r="1.2" fill="white"/>
+          <!-- blush -->
+          <ellipse cx="38" cy="55" rx="5" ry="3" fill="#ffb0b0" opacity="0.5"/>
+          <ellipse cx="66" cy="55" rx="5" ry="3" fill="#ffb0b0" opacity="0.5"/>
+          <!-- smile -->
+          <path d="M44,58 Q52,64 60,58" stroke="rgba(255,255,255,0.6)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          <!-- helmet ring -->
+          <circle cx="52" cy="48" r="26" fill="none" stroke="#c0cce8" stroke-width="3"/>
+          <circle cx="52" cy="48" r="26" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+          <!-- antenna -->
+          <line x1="52" y1="22" x2="52" y2="10" stroke="#c0cce8" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="52" cy="8" r="4" fill="#60aaff"/>
+          <circle cx="52" cy="8" r="2" fill="white"/>
         </svg>
-        <!-- RIGHT monster — shorter, box-shaped, angry -->
-        <svg width="95" height="110" viewBox="0 0 95 110" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
-          <!-- box body -->
-          <rect x="18" y="42" width="54" height="44" rx="6" fill="#c8a870"/>
-          <rect x="18" y="42" width="54" height="44" rx="6" fill="none" stroke="#a08850" stroke-width="1.5"/>
-          <!-- worn label -->
-          <rect x="24" y="50" width="40" height="26" rx="3" fill="#d4b87a" stroke="#a08050" stroke-width="1"/>
-          <rect x="27" y="54" width="34" height="3" rx="1" fill="#a08050" opacity="0.5"/>
-          <rect x="27" y="59" width="24" height="2" rx="1" fill="#a08050" opacity="0.4"/>
-          <rect x="27" y="63" width="28" height="2" rx="1" fill="#a08050" opacity="0.4"/>
-          <rect x="27" y="67" width="20" height="2" rx="1" fill="#a08050" opacity="0.4"/>
-          <!-- head -->
-          <ellipse cx="45" cy="28" rx="22" ry="20" fill="#c8b48a"/>
-          <ellipse cx="45" cy="27" rx="18" ry="16" fill="#d8c49a"/>
-          <!-- angry brow -->
-          <path d="M28,20 Q36,16 40,20" stroke="#6a4a20" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <path d="M50,20 Q54,16 62,20" stroke="#6a4a20" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-          <!-- eyes -->
-          <ellipse cx="37" cy="25" rx="6" ry="7" fill="white"/>
-          <ellipse cx="53" cy="25" rx="6" ry="7" fill="white"/>
-          <circle cx="37" cy="27" r="4" fill="#2a1808"/>
-          <circle cx="53" cy="27" r="4" fill="#2a1808"/>
-          <circle cx="38" cy="25" r="1.5" fill="white"/>
-          <circle cx="54" cy="25" r="1.5" fill="white"/>
-          <!-- open mouth with teeth -->
-          <path d="M35,38 Q45,46 55,38" fill="#6a2010"/>
-          <rect x="38" y="38" width="5" height="5" rx="1" fill="white"/>
-          <rect x="45" y="38" width="5" height="5" rx="1" fill="white"/>
-          <!-- left arm reaching out -->
-          <path d="M18,60 Q2,52 0,42" stroke="#c8b48a" stroke-width="9" stroke-linecap="round" fill="none"/>
-          <!-- right arm -->
-          <path d="M72,60 Q86,54 90,46" stroke="#c8b48a" stroke-width="9" stroke-linecap="round" fill="none"/>
-          <!-- little toy in right hand -->
-          <circle cx="90" cy="40" r="6" fill="#c08858"/>
-          <circle cx="86" cy="34" r="3.5" fill="#c08858"/>
-          <circle cx="94" cy="34" r="3.5" fill="#c08858"/>
-          <!-- legs -->
-          <rect x="24" y="82" width="14" height="20" rx="5" fill="#a08850"/>
-          <rect x="52" y="82" width="14" height="20" rx="5" fill="#a08850"/>
-          <ellipse cx="31" cy="102" rx="10" ry="5" fill="#806840"/>
-          <ellipse cx="59" cy="102" rx="10" ry="5" fill="#806840"/>
+        <!-- RIGHT — cute round alien -->
+        <svg width="95" height="118" viewBox="0 0 95 118" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+          <!-- shadow -->
+          <ellipse cx="47" cy="114" rx="20" ry="5" fill="rgba(0,0,0,0.25)"/>
+          <!-- feet -->
+          <ellipse cx="33" cy="108" rx="12" ry="6" fill="#20a060"/>
+          <ellipse cx="61" cy="108" rx="12" ry="6" fill="#20a060"/>
+          <rect x="24" y="94" width="16" height="16" rx="6" fill="#28b870"/>
+          <rect x="54" y="94" width="16" height="16" rx="6" fill="#28b870"/>
+          <!-- body — round and chubby -->
+          <ellipse cx="47" cy="76" rx="26" ry="24" fill="#30d080"/>
+          <ellipse cx="47" cy="76" rx="22" ry="20" fill="#40e890"/>
+          <!-- tummy -->
+          <ellipse cx="47" cy="80" rx="14" ry="11" fill="#28c070" opacity="0.6"/>
+          <!-- spots -->
+          <circle cx="36" cy="70" r="3" fill="#20b060" opacity="0.5"/>
+          <circle cx="58" cy="72" r="2" fill="#20b060" opacity="0.5"/>
+          <!-- arms -->
+          <ellipse cx="22" cy="68" rx="9" ry="6" fill="#38d880" transform="rotate(-40 22 68)"/>
+          <ellipse cx="72" cy="62" rx="9" ry="6" fill="#38d880" transform="rotate(30 72 62)"/>
+          <!-- little hands -->
+          <circle cx="14" cy="56" r="7" fill="#30c870"/>
+          <circle cx="80" cy="54" r="7" fill="#30c870"/>
+          <!-- fingers -->
+          <ellipse cx="11" cy="50" rx="3" ry="4.5" fill="#30c870" transform="rotate(-20 11 50)"/>
+          <ellipse cx="17" cy="49" rx="3" ry="4.5" fill="#30c870" transform="rotate(10 17 49)"/>
+          <ellipse cx="77" cy="48" rx="3" ry="4.5" fill="#30c870" transform="rotate(-10 77 48)"/>
+          <ellipse cx="83" cy="49" rx="3" ry="4.5" fill="#30c870" transform="rotate(20 83 49)"/>
+          <!-- head — big round -->
+          <circle cx="47" cy="40" r="30" fill="#30d080"/>
+          <circle cx="47" cy="40" r="26" fill="#40e890"/>
+          <!-- antennae -->
+          <line x1="35" y1="12" x2="28" y2="2" stroke="#28b870" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="27" cy="1" r="4" fill="#ff80ff"/>
+          <circle cx="27" cy="1" r="2" fill="white"/>
+          <line x1="59" y1="12" x2="66" y2="2" stroke="#28b870" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="67" cy="1" r="4" fill="#ff80ff"/>
+          <circle cx="67" cy="1" r="2" fill="white"/>
+          <!-- big cute eyes -->
+          <circle cx="36" cy="40" r="11" fill="white"/>
+          <circle cx="58" cy="40" r="11" fill="white"/>
+          <circle cx="37" cy="41" r="7" fill="#1a2a60"/>
+          <circle cx="59" cy="41" r="7" fill="#1a2a60"/>
+          <circle cx="38" cy="38" r="2.5" fill="white"/>
+          <circle cx="60" cy="38" r="2.5" fill="white"/>
+          <!-- blush -->
+          <ellipse cx="26" cy="50" rx="6" ry="4" fill="#ff9090" opacity="0.45"/>
+          <ellipse cx="68" cy="50" rx="6" ry="4" fill="#ff9090" opacity="0.45"/>
+          <!-- happy mouth -->
+          <path d="M37,54 Q47,62 57,54" stroke="#1a9050" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <!-- little star sparkles -->
+          <text x="82" y="30" font-size="12" fill="#ffe060" opacity="0.9">✦</text>
+          <text x="4" y="35" font-size="10" fill="#ffe060" opacity="0.7">✦</text>
         </svg>
       </div>
 

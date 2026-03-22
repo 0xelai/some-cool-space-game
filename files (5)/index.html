@@ -529,19 +529,24 @@ const SFX = (() => {
     menuNodes=[];
   }
 
-  function setOnMenu(val){
-    onMenu=val;
-    if(!val) stopMenuMusic(); // guarantee music stops when game starts
-  }
+
 
   function toggleMute(){
     muted=!muted;
     menuNodes.forEach(n=>{ try{ n.g.gain.value=muted?0:n.baseGain; }catch(e){} });
-    // If user just unmuted and we're on the menu, start music now
     if(!muted && onMenu) startMenuMusic();
-    // If user muted, stop music
     if(muted) stopMenuMusic();
     return muted;
+  }
+
+  function setOnMenu(val){
+    onMenu=val;
+    if(!val){
+      stopMenuMusic();
+    } else {
+      // Returning to menu — if user had sound on, restart music
+      if(!muted) startMenuMusic();
+    }
   }
 
   function checkSpeedTier(score){

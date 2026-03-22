@@ -193,20 +193,20 @@ body { font-family:'Press Start 2P',monospace; overflow:hidden; height:100vh; ba
 .ov > *{position:relative;z-index:1;}
 .ov-ttl{
   font-family:'Press Start 2P',monospace;
-  font-size:16px;letter-spacing:2px;
-  color:#e8f4ff;margin-bottom:10px;
+  font-size:14px;letter-spacing:2px;
+  color:#e8f4ff;margin-bottom:14px;
   text-shadow:0 3px 0 #0a1a6a,0 0 20px rgba(100,160,255,0.5);
 }
-.ov-sub{min-height:0;font-size:0;}
+.ov-sub{min-height:0;font-size:0;margin:0;}
 .ov-sc{
   font-family:'Press Start 2P',monospace;
-  font-size:48px;color:#ffe87a;
-  letter-spacing:-2px;line-height:1;
+  font-size:36px;color:#ffe87a;
+  letter-spacing:0;line-height:1.1;
   text-shadow:0 4px 0 #7a4500,0 0 30px rgba(255,200,60,0.4);
 }
 .ov-scl{
-  font-size:8px;color:#4a7aff;
-  margin-bottom:20px;letter-spacing:3px;
+  font-size:7px;color:#4a7aff;
+  margin-top:6px;margin-bottom:18px;letter-spacing:3px;
   font-family:'Press Start 2P',monospace;
 }
 .ov-btns{display:flex;gap:10px;justify-content:center;margin-top:4px;}
@@ -958,35 +958,44 @@ function spawnPF(){
 }
 function spawnOb(){
   const t=sr(), sc=S.score;
+  // Ground level = ~470, floor platform = 505
+  const GROUND=462, MID=300, HIGH_Y=CEIL+50;
+
   if(t<0.18){
-    // rock — high or low
+    // rock — deliberately 50/50 high OR ground level
     const high=sr()<0.5,ow=26+sr()*22,oh=26+sr()*22;
-    S.obstacles.push({x:W+20,y:high?CEIL+40+sr()*80:380+sr()*80,w:ow,h:oh,type:'rock',spin:0});
+    S.obstacles.push({x:W+20,y:high?HIGH_Y+sr()*70:GROUND-oh+sr()*30,w:ow,h:oh,type:'rock',spin:0});
   } else if(t<0.33){
-    // satellite
+    // satellite — high or sitting on ground level
     const high=sr()<0.5,ow=30+sr()*18,oh=24+sr()*14;
-    S.obstacles.push({x:W+20,y:high?CEIL+35+sr()*80:360+sr()*90,w:ow,h:oh,type:'sat',spin:0});
-  } else if(t<0.48){
-    // laser pillar (vertical)
-    const fromTop=sr()<0.5,bh=90+sr()*90;
+    S.obstacles.push({x:W+20,y:high?HIGH_Y+sr()*60:GROUND-oh+sr()*20,w:ow,h:oh,type:'sat',spin:0});
+  } else if(t<0.46){
+    // laser pillar — from top OR from floor (always 50/50)
+    const fromTop=sr()<0.5,bh=90+sr()*100;
     S.obstacles.push({x:W+18,y:fromTop?CEIL:H-30-bh,w:11,h:bh,type:'laser',spin:0});
-  } else if(t<0.60){
+  } else if(t<0.55){
     // UFO — mid screen, moves up/down
-    S.obstacles.push({x:W+20,y:150+sr()*200,w:44,h:22,type:'ufo',spin:0,vy:1.2*(sr()<0.5?1:-1)});
-  } else if(t<0.70){
-    // double rock pair (stacked with gap)
-    const gap=100+sr()*60,topY=CEIL+30+sr()*60;
-    S.obstacles.push({x:W+20,y:topY,w:24,h:24,type:'rock',spin:0});
-    S.obstacles.push({x:W+20,y:topY+gap,w:24,h:24,type:'rock',spin:sr()*Math.PI*2});
-  } else if(t<0.82 && sc>800){
-    // energy ball — fast, small
-    S.obstacles.push({x:W+20,y:120+sr()*340,w:18,h:18,type:'ball',spin:0,pulse:0});
-  } else if(t<0.88 && sc>600){
-    // comet — fast diagonal streak
-    S.obstacles.push({x:W+20,y:CEIL+30+sr()*300,w:28,h:12,type:'comet',spin:0,vy:(sr()-0.5)*1.5});
+    S.obstacles.push({x:W+20,y:MID-30+sr()*120,w:44,h:22,type:'ufo',spin:0,vy:1.4*(sr()<0.5?1:-1)});
+  } else if(t<0.63){
+    // double rock — one high, one ground — FORCES a jump
+    const topY=HIGH_Y+sr()*60;
+    S.obstacles.push({x:W+20,y:topY,w:22,h:22,type:'rock',spin:0});
+    S.obstacles.push({x:W+20,y:GROUND-22+sr()*15,w:22,h:22,type:'rock',spin:sr()*Math.PI*2});
+  } else if(t<0.74){
+    // ground scraper — wide flat rock that forces a jump
+    const ow=32+sr()*28, oh=20+sr()*16;
+    S.obstacles.push({x:W+20,y:GROUND-oh,w:ow,h:oh,type:'rock',spin:0});
+  } else if(t<0.84 && sc>500){
+    // energy ball — mix of heights including ground
+    const atGround=sr()<0.4;
+    S.obstacles.push({x:W+20,y:atGround?GROUND-18:HIGH_Y+sr()*260,w:18,h:18,type:'ball',spin:0,pulse:0});
+  } else if(t<0.91 && sc>600){
+    // comet — low diagonal aimed at ground huggers
+    const low=sr()<0.5;
+    S.obstacles.push({x:W+20,y:low?GROUND-40+sr()*30:HIGH_Y+sr()*150,w:28,h:12,type:'comet',spin:0,vy:(sr()-0.5)*1.8});
   } else {
-    // wormhole — spinning vortex portal
-    S.obstacles.push({x:W+20,y:CEIL+40+sr()*260,w:32,h:32,type:'wormhole',spin:0});
+    // wormhole — spread across all heights including ground
+    S.obstacles.push({x:W+20,y:HIGH_Y+sr()*320,w:32,h:32,type:'wormhole',spin:0});
   }
 }
 function spawnCoin(){ S.coins.push({x:W+20,y:100+sr()*360,r:6,collected:false,bob:sr()*Math.PI*2}); }

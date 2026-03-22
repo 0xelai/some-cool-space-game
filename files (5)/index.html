@@ -880,8 +880,8 @@ document.getElementById('ov-play-again').onclick = function(){
 };
 document.getElementById('ov-menu').onclick = goToMenu;
 
-// Init — game loop always starts, menu hides when wallet confirms
-S=newState(); updLives(); loop();
+// Init — only set up state, do NOT start loop until game actually starts
+S=newState(); updLives();
 </script>
 </body>
 </html>

@@ -6,12 +6,12 @@
 <title>Space Jumper</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-serif; overflow:hidden; height:100vh; background:#07091a; color:#fff; }
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Fredoka+One&family=Nunito:wght@600;700;800&display=swap');
+
+body { font-family:'Press Start 2P',monospace; overflow:hidden; height:100vh; background:#020510; color:#fff; }
 #bg-canvas { position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none; }
 
-/* ── MENU SCREEN ── */
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@600;700;800&display=swap');
-
+/* ══ MENU SCREEN ══ */
 #menu-screen {
   position:relative; z-index:10;
   width:100%; height:100vh;
@@ -19,323 +19,233 @@ body { font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-seri
   overflow:hidden;
 }
 
-/* ── FLOATING PLANETS ── */
+/* floating planets */
 .deco { position:absolute; border-radius:50%; pointer-events:none; }
 .deco-moon {
   width:150px; height:150px;
   background:radial-gradient(circle at 38% 35%, #d4f7a0 0%, #a8e060 35%, #78b830 70%, #558010 100%);
-  box-shadow: inset -16px -16px 32px rgba(30,60,0,0.4), 0 0 60px rgba(120,184,48,0.3), 0 0 120px rgba(120,184,48,0.12);
-  top:4%; left:3%;
-  animation: floatA 7s ease-in-out infinite;
+  box-shadow: inset -16px -16px 32px rgba(30,60,0,0.4), 0 0 60px rgba(120,184,48,0.25);
+  top:4%; left:3%; animation: floatA 7s ease-in-out infinite;
 }
-.deco-moon::before,.deco-moon::after { content:''; position:absolute; border-radius:50%; background:rgba(40,80,0,0.3); }
-.deco-moon::before { width:32px;height:26px;top:32px;left:26px; }
-.deco-moon::after  { width:20px;height:18px;top:66px;left:72px; }
-
+.deco-moon::before,.deco-moon::after{content:'';position:absolute;border-radius:50%;background:rgba(40,80,0,0.3);}
+.deco-moon::before{width:32px;height:26px;top:32px;left:26px;}
+.deco-moon::after{width:20px;height:18px;top:66px;left:72px;}
 .deco-saturn {
-  width:90px; height:90px;
+  width:90px;height:90px;
   background:radial-gradient(circle at 38% 35%, #c8dcff 0%, #8090d8 50%, #384878 100%);
-  box-shadow: inset -10px -10px 22px rgba(0,10,60,0.45), 0 0 40px rgba(100,130,220,0.25);
-  bottom:10%; right:4%;
-  animation: floatB 9s ease-in-out infinite;
+  box-shadow:inset -10px -10px 22px rgba(0,10,60,0.45),0 0 40px rgba(100,130,220,0.2);
+  bottom:10%;right:4%;animation:floatB 9s ease-in-out infinite;
 }
-.deco-saturn::before {
-  content:''; position:absolute;
-  width:140px; height:28px;
-  border:8px solid rgba(180,200,255,0.32);
-  border-radius:50%;
-  top:50%; left:50%;
-  transform:translate(-50%,-50%) rotate(-22deg);
-  box-shadow: 0 0 20px rgba(150,180,255,0.2);
-}
-
-.deco-red {
-  width:52px; height:52px;
-  background:radial-gradient(circle at 38% 35%, #ffb880 0%, #e06030 55%, #882010 100%);
-  box-shadow: inset -6px -6px 14px rgba(80,10,0,0.4), 0 0 30px rgba(220,80,30,0.2);
-  top:15%; right:14%;
-  animation: floatC 11s ease-in-out infinite;
-}
-.deco-red::before { content:''; position:absolute; width:16px;height:10px;top:14px;left:12px;border-radius:50%;background:rgba(255,200,150,0.3); }
-
-.deco-rock1 {
-  width:44px; height:38px;
-  background:radial-gradient(circle at 40% 38%, #8a7e9a 0%, #5a4e6a 100%);
-  border-radius:46% 54% 38% 62% / 55% 45% 55% 45%;
-  box-shadow: inset -4px -4px 10px rgba(20,0,40,0.5);
-  bottom:20%; left:4%;
-  animation: orbitRock 18s linear infinite;
-}
-.deco-rock2 {
-  width:26px; height:24px;
-  background:radial-gradient(circle at 40% 38%, #9a8a7a 0%, #6a5a4a 100%);
-  border-radius:54% 46% 62% 38% / 45% 55% 45% 55%;
-  top:55%; right:10%;
-  animation: floatA 8s ease-in-out infinite reverse;
-}
-.deco-rock3 {
-  width:18px; height:16px;
-  background:radial-gradient(circle at 40% 38%, #7a8a9a 0%, #3a4a5a 100%);
-  border-radius:50% 50% 60% 40%;
-  top:35%; left:8%;
-  animation: floatC 13s ease-in-out infinite;
-}
-/* orbiting asteroid around moon */
-.deco-orbit {
-  width:20px; height:18px;
-  background:radial-gradient(circle at 40% 38%, #b0a090 0%, #705040 100%);
-  border-radius:50%;
-  top:4%; left:3%;
-  transform-origin: 160px 160px;
-  animation: orbit 12s linear infinite;
-}
-@keyframes orbit { from{transform:rotate(0deg) translateX(120px) rotate(0deg)} to{transform:rotate(360deg) translateX(120px) rotate(-360deg)} }
+.deco-saturn::before{content:'';position:absolute;width:140px;height:28px;border:8px solid rgba(180,200,255,0.28);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-22deg);}
+.deco-red{width:52px;height:52px;background:radial-gradient(circle at 38% 35%,#ffb880 0%,#e06030 55%,#882010 100%);box-shadow:inset -6px -6px 14px rgba(80,10,0,0.4);top:15%;right:14%;animation:floatC 11s ease-in-out infinite;}
+.deco-rock1{width:44px;height:38px;background:radial-gradient(circle at 40% 38%,#8a7e9a 0%,#5a4e6a 100%);border-radius:46% 54% 38% 62%/55% 45% 55% 45%;bottom:20%;left:4%;animation:orbitRock 18s linear infinite;}
+.deco-rock2{width:26px;height:24px;background:radial-gradient(circle at 40% 38%,#9a8a7a 0%,#6a5a4a 100%);border-radius:54% 46% 62% 38%;top:55%;right:10%;animation:floatA 8s ease-in-out infinite reverse;}
+.deco-rock3{width:18px;height:16px;background:radial-gradient(circle at 40% 38%,#7a8a9a 0%,#3a4a5a 100%);border-radius:50%;top:35%;left:8%;animation:floatC 13s ease-in-out infinite;}
+.deco-orbit{width:20px;height:18px;background:radial-gradient(circle at 40% 38%,#b0a090 0%,#705040 100%);border-radius:50%;top:4%;left:3%;transform-origin:160px 160px;animation:orbit 12s linear infinite;}
+@keyframes orbit{from{transform:rotate(0deg) translateX(120px) rotate(0deg)}to{transform:rotate(360deg) translateX(120px) rotate(-360deg)}}
 @keyframes floatA{0%,100%{transform:translateY(0px) rotate(0deg)}50%{transform:translateY(-22px) rotate(5deg)}}
 @keyframes floatB{0%,100%{transform:translateY(0px) rotate(-4deg)}50%{transform:translateY(-16px) rotate(4deg)}}
 @keyframes floatC{0%,100%{transform:translateY(0px) rotate(6deg)}50%{transform:translateY(-12px) rotate(-6deg)}}
 @keyframes orbitRock{0%{transform:translate(0,0) rotate(0deg)}25%{transform:translate(30px,-20px) rotate(90deg)}50%{transform:translate(60px,0px) rotate(180deg)}75%{transform:translate(30px,20px) rotate(270deg)}100%{transform:translate(0,0) rotate(360deg)}}
-
-/* twinkling stars */
-.twinkle { position:absolute; border-radius:50%; background:#fff; pointer-events:none; animation:twinkle ease-in-out infinite; }
+.twinkle{position:absolute;border-radius:50%;background:#fff;pointer-events:none;animation:twinkle ease-in-out infinite;}
 @keyframes twinkle{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.1;transform:scale(0.3)}}
 
-/* ── TITLE ── */
-.menu-card { position:relative; z-index:5; text-align:center; width:calc(100% - 32px); max-width:420px; }
-
-.menu-title {
-  font-family:'Fredoka One','Arial Black',sans-serif;
-  font-size:clamp(52px,11vw,76px);
-  line-height:0.9; letter-spacing:3px;
-  color:#fff;
-  text-shadow: 0 5px 0 #1a3a9a, 0 10px 0 rgba(20,50,150,0.45), 0 0 50px rgba(120,180,255,0.7), 0 0 100px rgba(80,140,255,0.3);
-  -webkit-text-stroke: 3px rgba(100,160,255,0.55);
-  margin-bottom:36px;
-  animation: titlePulse 3s ease-in-out infinite;
+/* ── PIXEL TITLE ── */
+.menu-card{position:relative;z-index:5;text-align:center;width:calc(100% - 32px);max-width:420px;}
+.menu-title{
+  font-family:'Press Start 2P',monospace;
+  font-size:clamp(28px,6vw,44px);
+  line-height:1.3;letter-spacing:2px;
+  color:#e8f4ff;
+  text-shadow:0 4px 0 #0a1a6a,0 8px 0 rgba(10,30,120,0.5),0 0 30px rgba(100,160,255,0.8),0 0 60px rgba(60,120,255,0.4);
+  margin-bottom:32px;
+  image-rendering:pixelated;
 }
-@keyframes titlePulse{0%,100%{text-shadow:0 5px 0 #1a3a9a,0 10px 0 rgba(20,50,150,0.45),0 0 50px rgba(120,180,255,0.7),0 0 100px rgba(80,140,255,0.3)}50%{text-shadow:0 5px 0 #1a3a9a,0 10px 0 rgba(20,50,150,0.45),0 0 80px rgba(120,180,255,0.9),0 0 160px rgba(80,140,255,0.5)}}
-.title-line2 { display:block; color:#ffe060; -webkit-text-stroke:3px rgba(200,130,0,0.55); text-shadow:0 5px 0 #a06000,0 10px 0 rgba(160,90,0,0.4),0 0 50px rgba(255,220,60,0.6),0 0 100px rgba(255,180,0,0.3); animation:titlePulse2 3s ease-in-out infinite; }
-@keyframes titlePulse2{0%,100%{text-shadow:0 5px 0 #a06000,0 10px 0 rgba(160,90,0,0.4),0 0 50px rgba(255,220,60,0.6),0 0 100px rgba(255,180,0,0.3)}50%{text-shadow:0 5px 0 #a06000,0 10px 0 rgba(160,90,0,0.4),0 0 90px rgba(255,220,60,0.95),0 0 180px rgba(255,180,0,0.5)}}
+.title-line2{display:block;color:#ffe87a;text-shadow:0 4px 0 #8a5000,0 8px 0 rgba(140,80,0,0.4),0 0 30px rgba(255,200,60,0.8),0 0 60px rgba(255,150,0,0.4);}
 
-/* ── WALLET INFO STRIP ── */
-#sphere-wallet-info {
+/* ── WALLET INFO ── */
+#sphere-wallet-info{
   display:none;
-  background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
-  border-radius:16px; padding:10px 18px; margin-bottom:16px;
-  font-size:13px; font-family:'Nunito',sans-serif;
-  backdrop-filter:blur(12px);
+  background:rgba(10,20,60,0.8);
+  border:2px solid #2a4a9a;
+  border-bottom:3px solid #1a3070;
+  border-radius:8px;padding:10px 16px;margin-bottom:14px;
+  font-size:10px;font-family:'Press Start 2P',monospace;
 }
-.wallet-row { display:flex;justify-content:space-between;align-items:center; }
-#sphere-address { color:#ffe060; font-weight:700; }
-#sphere-balance { color:rgba(255,255,255,0.55); font-size:12px; }
-#sphere-disconnect-btn {
-  display:none; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2);
-  border-radius:8px; padding:4px 10px; font-size:11px; color:rgba(255,255,255,0.5); cursor:pointer; font-family:'Nunito',sans-serif;
+.wallet-row{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+#sphere-address{color:#7adcff;font-size:9px;}
+#sphere-balance{color:rgba(255,255,255,0.45);font-size:9px;}
+#sphere-disconnect-btn{
+  display:none;
+  background:#1a2a5a;border:2px solid #2a4a9a;border-bottom:3px solid #0a1a40;
+  border-radius:6px;padding:4px 8px;font-size:8px;color:#7adcff;cursor:pointer;
+  font-family:'Press Start 2P',monospace;
 }
-#sphere-disconnect-btn:hover { background:rgba(255,255,255,0.2); }
-#sphere-connect-btn { display: block; }
-#sphere-deposit-btn { display: none; }
+#sphere-connect-btn{display:block;}
+#sphere-deposit-btn{display:none;}
 
-/* ── ARCADE BUTTONS ── */
-.wallet-section { margin-bottom:0; }
-.arcade-btn {
-  display:block; width:100%; max-width:280px;
+/* ── PIXEL BUTTONS ── */
+.wallet-section{margin-bottom:0;}
+.arcade-btn{
+  display:block;width:100%;max-width:300px;
   margin:0 auto 16px;
-  padding:16px 24px;
-  font-family:'Fredoka One','Arial Black',sans-serif;
-  font-size:22px; letter-spacing:2px;
-  color:#fff; cursor:pointer; border:none;
-  border-radius:16px; position:relative;
-  text-shadow:0 2px 4px rgba(0,0,0,0.5);
-  animation: btnBounce 1.8s ease-in-out infinite;
+  padding:14px 24px;
+  font-family:'Press Start 2P',monospace;
+  font-size:14px;letter-spacing:1px;
+  color:#fff;cursor:pointer;border:none;
+  border-radius:10px;
+  position:relative;
+  image-rendering:pixelated;
+  animation:btnBounce 2s ease-in-out infinite;
+  transition:transform 0.08s,box-shadow 0.08s;
 }
-.arcade-btn:nth-child(2) { animation-delay: 0.3s; }
-#demo-btn { animation-delay: 0.6s; }
-@keyframes btnBounce {
-  0%,100% { transform: translateY(0px); }
-  50%      { transform: translateY(-6px); }
-}
-.arcade-btn:hover  { filter:brightness(1.12); animation-play-state:paused; transform:translateY(-4px) scale(1.03); }
-.arcade-btn:active { transform:translateY(4px) scale(0.97); filter:brightness(0.88); animation-play-state:paused; }
-.arcade-btn:disabled { opacity:0.45; cursor:not-allowed; animation:none; transform:none !important; }
+.arcade-btn:nth-child(2){animation-delay:0.35s;}
+@keyframes btnBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.arcade-btn:hover{filter:brightness(1.15);animation-play-state:paused;transform:translateY(-3px);}
+.arcade-btn:active{transform:translateY(4px)!important;animation-play-state:paused;}
+.arcade-btn:disabled{opacity:0.4;cursor:not-allowed;animation:none;transform:none!important;}
 
-/* gold UCT button */
-.arcade-btn-gold {
-  background:linear-gradient(180deg,#ffe060 0%,#f0a800 45%,#c87000 100%);
-  box-shadow: 0 7px 0 #7a4500, 0 10px 20px rgba(200,112,0,0.45), inset 0 1px 0 rgba(255,255,210,0.5);
-  border:2px solid #d09000;
+/* gold — CONNECT / PLAY */
+.arcade-btn-gold{
+  background:linear-gradient(180deg,#ffe87a 0%,#f0c020 40%,#d09000 100%);
+  color:#5a3000;text-shadow:0 1px 0 rgba(255,255,200,0.6);
+  border:2px solid #f0b000;
+  border-bottom:5px solid #8a5000;
+  box-shadow:0 6px 0 #5a3000,0 8px 20px rgba(200,130,0,0.35),inset 0 1px 0 rgba(255,255,220,0.5);
 }
-.arcade-btn-gold:active { box-shadow:0 2px 0 #7a4500; }
+.arcade-btn-gold:active{box-shadow:0 1px 0 #5a3000,inset 0 2px 4px rgba(0,0,0,0.2);}
 
-/* teal demo button */
-.arcade-btn-teal {
-  background:linear-gradient(180deg,#60ecd4 0%,#28c0a0 45%,#149880 100%);
-  box-shadow: 0 7px 0 #0a5848, 0 10px 24px rgba(20,152,128,0.45), inset 0 1px 0 rgba(180,255,240,0.4);
-  border:2px solid #18b090;
+/* teal demo */
+.arcade-btn-teal{
+  background:linear-gradient(180deg,#70f0d8 0%,#30c0a0 40%,#0a9070 100%);
+  color:#003828;text-shadow:0 1px 0 rgba(180,255,240,0.5);
+  border:2px solid #20c090;
+  border-bottom:5px solid #065840;
+  box-shadow:0 6px 0 #065840,0 8px 20px rgba(20,160,120,0.35),inset 0 1px 0 rgba(180,255,240,0.4);
 }
-.arcade-btn-teal:hover { box-shadow:0 7px 0 #0a5848,0 14px 36px rgba(20,200,160,0.6),inset 0 1px 0 rgba(180,255,240,0.4); }
-.arcade-btn-teal:active { box-shadow:0 2px 0 #0a5848,0 4px 10px rgba(20,152,128,0.25); }
+.arcade-btn-teal:active{box-shadow:0 1px 0 #065840;}
 
-.uct-badge {
-  display:inline-block; background:rgba(255,255,255,0.25);
-  border-radius:8px; padding:2px 9px; font-size:15px; margin-left:6px; vertical-align:middle;
+.uct-badge{
+  display:inline-block;background:rgba(0,0,0,0.2);
+  border:1px solid rgba(255,255,255,0.3);
+  border-radius:4px;padding:2px 7px;font-size:11px;margin-left:6px;vertical-align:middle;
+}
+#sphere-error{
+  display:none;color:#ff8888;font-size:9px;line-height:1.8;
+  background:rgba(80,0,0,0.4);border:2px solid #aa2020;
+  border-radius:8px;padding:10px;margin-top:12px;
+  font-family:'Press Start 2P',monospace;max-width:300px;margin-left:auto;margin-right:auto;
 }
 
-#sphere-error {
-  display:none; color:#ffb3b3; font-size:12px; line-height:1.5;
-  background:rgba(255,60,60,0.14); border:1px solid rgba(255,80,80,0.3);
-  border-radius:12px; padding:9px 14px; margin-top:12px;
-  font-family:'Nunito',sans-serif; max-width:300px; margin-left:auto; margin-right:auto;
-}
+/* mute button */
+#mute-btn-menu{font-family:'Press Start 2P',monospace!important;font-size:9px!important;}
 
 /* ── GAME SCREEN ── */
-#game-screen {
+#game-screen{
   position:fixed;top:0;left:0;right:0;bottom:0;z-index:10;
   display:none;flex-direction:column;align-items:center;justify-content:center;
 }
-#hud {
-  position:absolute;top:13px;left:0;right:0;
+/* pixel HUD */
+#hud{
+  position:absolute;top:10px;left:0;right:0;
   display:flex;justify-content:space-between;align-items:center;
-  padding:0 16px;pointer-events:none;z-index:20;
+  padding:0 14px;pointer-events:none;z-index:20;
 }
-.hpill {
-  background:rgba(255,255,255,0.07);backdrop-filter:blur(18px);
-  border:1px solid rgba(255,255,255,0.12);border-radius:22px;
-  padding:6px 14px;font-size:13px;font-weight:500;
-  color:rgba(255,255,255,0.82);display:flex;align-items:center;gap:7px;
+.hpill{
+  background:#0a1430;
+  border:2px solid #1a3a80;
+  border-bottom:3px solid #0a1a50;
+  border-radius:6px;
+  padding:6px 12px;font-size:10px;font-weight:500;
+  color:#7adcff;display:flex;align-items:center;gap:6px;
+  font-family:'Press Start 2P',monospace;
+  box-shadow:0 3px 0 #050a1e,0 4px 12px rgba(0,0,0,0.4);
+  image-rendering:pixelated;
 }
-.hlives{letter-spacing:5px;color:#ffb3c8;}
-.haddr{color:#c8b4ff;font-size:11px;font-family:monospace;}
+.hlives{letter-spacing:4px;color:#ff8fb0;}
+.haddr{color:#7adcff;font-size:8px;font-family:'Press Start 2P',monospace;}
 
-/* ── TRUE LIQUID GLASS ── */
+/* ── PIXEL GAME OVER ── */
 #game-overlay {
   position:absolute;z-index:30;top:0;left:0;right:0;bottom:0;
   display:none;align-items:center;justify-content:center;
-  background:rgba(0,0,0,0.35);
-  backdrop-filter:blur(2px);
+  background:rgba(0,0,8,0.88);
 }
 .ov {
   position:relative;
   width:calc(100% - 48px);
-  max-width:300px;
-  border-radius:36px;
-  padding:36px 28px 28px;
+  max-width:310px;
+  border-radius:12px;
+  padding:32px 28px 28px;
   text-align:center;
   overflow:hidden;
-  /* silver-white glass — light, not dark */
-  background:rgba(210,215,230,0.22);
-  backdrop-filter:blur(80px) saturate(160%) brightness(1.6);
-  -webkit-backdrop-filter:blur(80px) saturate(160%) brightness(1.6);
-  /* physical glass borders */
-  border:none;
-  outline: 1.5px solid rgba(255,255,255,0.55);
-  /* deep physical shadow — like glass sitting on a table */
-  box-shadow:
-    0 2px 0 rgba(255,255,255,0.9),
-    0 40px 80px rgba(0,0,0,0.6),
-    0 12px 24px rgba(0,0,0,0.4),
-    inset 0 1.5px 0 rgba(255,255,255,1),
-    inset 0 -1px 0 rgba(255,255,255,0.15),
-    inset 1px 0 0 rgba(255,255,255,0.6),
-    inset -1px 0 0 rgba(255,255,255,0.15);
+  background:#060c28;
+  border:3px solid #1a3a8a;
+  border-bottom:5px solid #0a1a50;
+  box-shadow:0 8px 0 #020610,0 12px 40px rgba(20,60,200,0.35),inset 0 1px 0 rgba(100,150,255,0.15);
 }
-/* curved top reflection — the key to glass */
-.ov::before {
-  content:'';
-  position:absolute;top:0;left:0;right:0;height:52%;
-  background:
-    linear-gradient(180deg,
-      rgba(255,255,255,0.55) 0%,
-      rgba(255,255,255,0.18) 20%,
-      rgba(255,255,255,0.04) 60%,
-      transparent 100%);
-  border-radius:36px 36px 50% 50% / 36px 36px 30px 30px;
-  pointer-events:none;
-  z-index:1;
+/* scanline */
+.ov::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.07) 2px,rgba(0,0,0,0.07) 4px);
+  pointer-events:none;z-index:0;border-radius:10px;
 }
-/* bottom fade */
-.ov::after {
-  content:'';
-  position:absolute;bottom:0;left:0;right:0;height:30%;
-  background:linear-gradient(0deg,rgba(0,0,0,0.18) 0%,transparent 100%);
-  border-radius:0 0 36px 36px;
-  pointer-events:none;
-  z-index:1;
-}
-.ov > * { position:relative; z-index:2; }
-
+.ov > *{position:relative;z-index:1;}
 .ov-ttl{
-  font-family:'Fredoka One',sans-serif;
-  font-size:28px;letter-spacing:1px;
-  color:#fff;margin-bottom:4px;
-  text-shadow:0 1px 3px rgba(0,0,0,0.5),0 0 20px rgba(255,255,255,0.2);
+  font-family:'Press Start 2P',monospace;
+  font-size:16px;letter-spacing:2px;
+  color:#e8f4ff;margin-bottom:10px;
+  text-shadow:0 3px 0 #0a1a6a,0 0 20px rgba(100,160,255,0.5);
 }
 .ov-sub{min-height:0;font-size:0;}
 .ov-sc{
-  font-family:'Fredoka One',sans-serif;font-size:68px;
-  color:#fff;letter-spacing:-2px;line-height:1;
-  text-shadow:0 2px 4px rgba(0,0,0,0.4),0 0 30px rgba(255,255,255,0.15);
+  font-family:'Press Start 2P',monospace;
+  font-size:48px;color:#ffe87a;
+  letter-spacing:-2px;line-height:1;
+  text-shadow:0 4px 0 #7a4500,0 0 30px rgba(255,200,60,0.4);
 }
 .ov-scl{
-  font-size:10px;color:rgba(255,255,255,0.55);
-  margin-bottom:20px;letter-spacing:4px;
-  font-family:'Nunito',sans-serif;font-weight:800;
+  font-size:8px;color:#4a7aff;
+  margin-bottom:20px;letter-spacing:3px;
+  font-family:'Press Start 2P',monospace;
 }
 .ov-btns{display:flex;gap:10px;justify-content:center;margin-top:4px;}
-
-/* glass pill buttons — look like iOS 26 */
 .btn-ag{
-  flex:1;padding:14px 0;border-radius:20px;border:none;
-  background:rgba(255,255,255,0.28);
-  backdrop-filter:blur(40px) brightness(1.4);
-  outline:1px solid rgba(255,255,255,0.5);
-  box-shadow:
-    0 1.5px 0 rgba(255,255,255,0.95),
-    0 8px 24px rgba(0,0,0,0.35),
-    inset 0 1px 0 rgba(255,255,255,0.9),
-    inset 0 -1px 0 rgba(255,255,255,0.1);
-  color:#fff;font-size:15px;font-weight:800;cursor:pointer;
-  font-family:'Fredoka One',sans-serif;letter-spacing:1.5px;
-  text-shadow:0 1px 4px rgba(0,0,0,0.5);
-  transition:transform 0.1s,box-shadow 0.1s;
+  flex:1;padding:13px 0;border-radius:8px;border:none;
+  background:linear-gradient(180deg,#9080e8 0%,#6050c0 45%,#3a2890 100%);
+  border:2px solid #8070d0;border-bottom:4px solid #1a1050;
+  box-shadow:0 5px 0 #0a0830,0 6px 16px rgba(80,60,200,0.35);
+  color:#fff;font-size:10px;font-weight:800;cursor:pointer;
+  font-family:'Press Start 2P',monospace;letter-spacing:1px;
+  text-shadow:0 2px 0 #1a0860;
+  transition:transform 0.08s,box-shadow 0.08s;
 }
-.btn-ag::before{
-  content:'';position:absolute;top:0;left:5%;right:5%;height:50%;
-  background:linear-gradient(180deg,rgba(255,255,255,0.4) 0%,transparent 100%);
-  border-radius:20px 20px 50% 50%;pointer-events:none;
-}
-.btn-ag{position:relative;overflow:hidden;}
-.btn-ag:hover{transform:translateY(-1px);box-shadow:0 1.5px 0 rgba(255,255,255,0.95),0 12px 30px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.9);}
-.btn-ag:active{transform:translateY(1px);}
-
+.btn-ag:hover{transform:translateY(-2px);}
+.btn-ag:active{transform:translateY(3px)!important;box-shadow:0 1px 0 #0a0830;}
 .btn-bk{
-  flex:1;padding:14px 0;border-radius:20px;border:none;
-  background:rgba(255,255,255,0.12);
-  backdrop-filter:blur(40px);
-  outline:1px solid rgba(255,255,255,0.3);
-  box-shadow:0 1px 0 rgba(255,255,255,0.7),0 6px 16px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.6);
-  color:rgba(255,255,255,0.75);font-size:15px;cursor:pointer;
-  font-family:'Fredoka One',sans-serif;letter-spacing:1px;
-  text-shadow:0 1px 3px rgba(0,0,0,0.4);
-  transition:transform 0.1s;
+  flex:1;padding:13px 0;border-radius:8px;
+  background:linear-gradient(180deg,#2a3a6a 0%,#1a2a50 45%,#0a1430 100%);
+  border:2px solid #1a2a5a;border-bottom:4px solid #060c20;
+  box-shadow:0 5px 0 #020610,0 6px 12px rgba(0,0,0,0.4);
+  color:#7adcff;font-size:10px;cursor:pointer;
+  font-family:'Press Start 2P',monospace;letter-spacing:1px;
+  transition:transform 0.08s;
 }
-.btn-bk:hover{transform:translateY(-1px);background:rgba(255,255,255,0.18);}
-
+.btn-bk:hover{transform:translateY(-1px);}
+.btn-bk:active{transform:translateY(3px)!important;}
 #ov-waiting{
   display:none;margin-top:14px;
-  background:rgba(255,255,255,0.12);
-  outline:1px solid rgba(255,255,255,0.35);
-  border-radius:14px;padding:10px 14px;
-  font-size:12px;color:rgba(255,255,255,0.8);
-  font-family:'Nunito',sans-serif;font-weight:700;letter-spacing:0.3px;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);
+  background:#0a1428;
+  border:2px solid #c8a020;border-bottom:3px solid #6a5000;
+  border-radius:8px;padding:10px 12px;
+  font-size:8px;color:#ffe87a;
+  font-family:'Press Start 2P',monospace;line-height:1.8;
+  box-shadow:0 3px 0 #3a2800;
   animation:waitPulse 1.4s ease-in-out infinite;
 }
 @keyframes waitPulse{0%,100%{opacity:1}50%{opacity:0.45}}
 
-#gameCanvas{display:block;background:transparent;position:relative;z-index:10;}
-#hint{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:12px;color:rgba(255,255,255,0.18);pointer-events:none;z-index:15;}
-@keyframes spin{to{transform:rotate(360deg)}}
-.spinner{width:14px;height:14px;border:2px solid rgba(255,255,255,0.18);border-top-color:#fff;border-radius:50%;animation:spin 0.65s linear infinite;display:inline-block;vertical-align:middle;margin-right:7px;}
+#hint{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-size:8px;color:rgba(100,150,255,0.35);pointer-events:none;z-index:15;font-family:'Press Start 2P',monospace;letter-spacing:1px;}
 </style>
 </head>
 <body>
@@ -345,9 +255,16 @@ body { font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-seri
 <div id="menu-screen">
 
   <!-- LEADERBOARD BUTTON — top right -->
-  <button onclick="openLeaderboard()" style="position:absolute;top:18px;right:18px;z-index:20;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.22);border-radius:12px;padding:9px 16px;color:#fff;font-family:'Fredoka One',sans-serif;font-size:15px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:7px;backdrop-filter:blur(12px);transition:background 0.18s;">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-    LEADERBOARD
+  <button onclick="openLeaderboard()" style="position:absolute;top:16px;right:16px;z-index:20;
+    background:linear-gradient(180deg,#9080e8 0%,#6050c0 45%,#3a2890 100%);
+    border:2px solid #8070d0;border-bottom:4px solid #1a1050;
+    border-radius:8px;padding:10px 14px;
+    color:#fff;font-family:'Press Start 2P',monospace;font-size:9px;letter-spacing:1px;
+    cursor:pointer;
+    box-shadow:0 5px 0 #0a0830,0 6px 16px rgba(80,60,180,0.4);
+    display:flex;align-items:center;gap:7px;transition:transform 0.08s;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+    RANKS
   </button>
 
   <!-- floating planets & rocks -->
@@ -399,51 +316,37 @@ body { font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-seri
 </div>
 
 <!-- ══ LEADERBOARD MODAL ══ -->
-<div id="lb-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+<div id="lb-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,8,0.92);align-items:center;justify-content:center;">
   <div style="
     position:relative;width:calc(100% - 24px);max-width:500px;max-height:92vh;overflow-y:auto;
-    border-radius:36px;
-    background:rgba(210,215,230,0.2);
-    backdrop-filter:blur(80px) saturate(160%) brightness(1.65);
-    -webkit-backdrop-filter:blur(80px) saturate(160%) brightness(1.65);
-    border:none;
-    outline:1.5px solid rgba(255,255,255,0.55);
-    box-shadow:
-      0 2px 0 rgba(255,255,255,0.9),
-      0 40px 100px rgba(0,0,0,0.65),
-      0 16px 40px rgba(0,0,0,0.45),
-      inset 0 2px 0 rgba(255,255,255,1),
-      inset 0 -1px 0 rgba(255,255,255,0.12),
-      inset 1.5px 0 0 rgba(255,255,255,0.65),
-      inset -1px 0 0 rgba(255,255,255,0.12);
-    padding:36px 24px 28px;
-    overflow:hidden;
+    background:#060c28;
+    border:3px solid #1a3a8a;
+    border-bottom:5px solid #0a1a50;
+    border-radius:12px;
+    box-shadow:0 8px 0 #030810,0 12px 40px rgba(20,60,180,0.4),inset 0 1px 0 rgba(100,150,255,0.2);
+    padding:32px 24px 28px;
   ">
-    <!-- curved top reflection -->
-    <div style="position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,0.5) 0%,rgba(255,255,255,0.14) 25%,rgba(255,255,255,0.03) 60%,transparent 100%);border-radius:36px 36px 50% 50% / 36px 36px 30px 30px;pointer-events:none;z-index:0;"></div>
-    <!-- bottom shadow -->
-    <div style="position:absolute;bottom:0;left:0;right:0;height:28%;background:linear-gradient(0deg,rgba(0,0,0,0.2) 0%,transparent 100%);border-radius:0 0 36px 36px;pointer-events:none;z-index:0;"></div>
+    <!-- scanline overlay -->
+    <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;border-radius:10px;z-index:0;"></div>
 
-    <!-- header -->
     <div style="text-align:center;margin-bottom:24px;position:relative;z-index:1;">
-      <div style="font-family:'Fredoka One',sans-serif;font-size:11px;letter-spacing:5px;color:rgba(255,255,255,0.55);margin-bottom:6px;" id="lb-date">—</div>
-      <div style="font-family:'Fredoka One',sans-serif;font-size:30px;letter-spacing:3px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.5),0 0 20px rgba(255,255,255,0.15);">HALL OF FAME</div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:5px;font-family:'Nunito',sans-serif;">Top 5 pilots today</div>
-      <div style="margin:16px auto 0;width:55%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);"></div>
+      <div style="font-family:'Press Start 2P',monospace;font-size:9px;letter-spacing:4px;color:#4a7aff;margin-bottom:10px;" id="lb-date">—</div>
+      <div style="font-family:'Press Start 2P',monospace;font-size:20px;letter-spacing:2px;color:#e8f4ff;text-shadow:0 3px 0 #0a1a6a,0 0 20px rgba(100,160,255,0.6);">HALL OF FAME</div>
+      <div style="font-size:9px;color:rgba(100,150,255,0.5);margin-top:10px;font-family:'Press Start 2P',monospace;letter-spacing:1px;">TOP 5 PILOTS</div>
+      <div style="margin:16px auto 0;width:55%;height:2px;background:linear-gradient(90deg,transparent,#1a3a8a,transparent);"></div>
     </div>
 
     <div id="lb-list" style="position:relative;z-index:1;"></div>
 
     <div style="text-align:center;margin-top:20px;position:relative;z-index:1;">
       <button onclick="closeLeaderboard()" style="
-        background:rgba(255,255,255,0.2);
-        outline:1px solid rgba(255,255,255,0.45);
-        border:none;border-radius:18px;padding:12px 36px;
-        color:#fff;font-family:'Fredoka One',sans-serif;font-size:15px;letter-spacing:1.5px;
+        background:linear-gradient(180deg,#3a4a8a 0%,#1a2a6a 45%,#0a1440 100%);
+        border:2px solid #2a3a7a;border-bottom:4px solid #060c28;
+        border-radius:8px;padding:12px 32px;
+        color:#7adcff;font-family:'Press Start 2P',monospace;font-size:10px;letter-spacing:1px;
         cursor:pointer;
-        box-shadow:0 1.5px 0 rgba(255,255,255,0.9),0 6px 20px rgba(0,0,0,0.3),inset 0 1.5px 0 rgba(255,255,255,0.85);
-        text-shadow:0 1px 3px rgba(0,0,0,0.4);
-        transition:transform 0.1s;
+        box-shadow:0 5px 0 #020610,0 6px 16px rgba(20,60,180,0.3);
+        transition:transform 0.08s;
       ">CLOSE</button>
     </div>
   </div>
@@ -884,26 +787,21 @@ function renderLB(rows, highlightPlayer){
         ${charSVG(i, (r.player.replace('@','')[0]||'?').toUpperCase())}
       </div>
       <div style="
-        background:rgba(255,255,255,0.18);
-        backdrop-filter:blur(40px) brightness(1.5);
-        border-radius:${big?'24px':'20px'};
-        border:none;
-        outline:1px solid rgba(255,255,255,0.5);
-        box-shadow:
-          0 1.5px 0 rgba(255,255,255,0.95),
-          0 10px 30px rgba(0,0,0,0.4),
-          inset 0 1.5px 0 rgba(255,255,255,0.9),
-          inset 0 -1px 0 rgba(255,255,255,0.1);
-        padding:10px 10px 16px;
+        background:#060c28;
+        border:2px solid #1a3a8a;
+        border-bottom:${big?'4px':'3px'} solid #0a1a50;
+        border-radius:10px;
+        box-shadow:0 ${big?'5':'3'}px 0 #020610,0 6px 20px rgba(20,60,180,0.25);
+        padding:10px 10px 14px;
         position:relative;overflow:hidden;
       ">
-        <!-- reflection -->
-        <div style="position:absolute;top:0;left:5%;right:5%;height:48%;background:linear-gradient(180deg,rgba(255,255,255,0.45) 0%,rgba(255,255,255,0.08) 60%,transparent 100%);border-radius:${big?'24px':'20px'} ${big?'24px':'20px'} 50% 50%;pointer-events:none;"></div>
-        ${isYou?`<div style="position:absolute;top:6px;right:8px;background:rgba(255,255,255,0.25);outline:1px solid rgba(255,255,255,0.6);border-radius:6px;padding:2px 7px;font-size:9px;font-family:'Nunito',sans-serif;font-weight:800;color:#fff;letter-spacing:1px;text-shadow:0 1px 2px rgba(0,0,0,0.3);">YOU</div>`:''}
-        <div style="font-family:'Fredoka One',sans-serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.6);margin-bottom:2px;position:relative;text-shadow:0 1px 3px rgba(0,0,0,0.4);">${cfg.title}</div>
-        <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:${big?'14px':'12px'};color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;position:relative;text-shadow:0 1px 4px rgba(0,0,0,0.5);">${r.player}</div>
-        <div style="font-family:'Fredoka One',sans-serif;font-size:${big?'24px':'19px'};color:#fff;line-height:1;position:relative;text-shadow:0 2px 6px rgba(0,0,0,0.45);">${r.score.toLocaleString()}</div>
-        <div style="font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-top:2px;position:relative;">PTS</div>
+        <!-- scanline -->
+        <div style="position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.06) 2px,rgba(0,0,0,0.06) 4px);pointer-events:none;border-radius:8px;"></div>
+        ${isYou?`<div style="position:absolute;top:5px;right:6px;background:#1a3a8a;border:1px solid #4a7aff;border-radius:4px;padding:2px 5px;font-size:7px;font-family:'Press Start 2P',monospace;color:#7adcff;letter-spacing:1px;">YOU</div>`:''}
+        <div style="font-family:'Press Start 2P',monospace;font-size:7px;letter-spacing:1px;color:#4a7aff;margin-bottom:4px;position:relative;">${cfg.title}</div>
+        <div style="font-family:'Press Start 2P',monospace;font-weight:800;font-size:${big?'9px':'8px'};color:#e8f4ff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:8px;position:relative;">${r.player}</div>
+        <div style="font-family:'Press Start 2P',monospace;font-size:${big?'16px':'13px'};color:#ffe87a;line-height:1;position:relative;text-shadow:0 2px 0 #8a5000;">${r.score.toLocaleString()}</div>
+        <div style="font-size:7px;color:rgba(100,150,255,0.5);letter-spacing:2px;margin-top:4px;position:relative;font-family:'Press Start 2P',monospace;">PTS</div>
       </div>
     </div>`;
   }
@@ -951,26 +849,69 @@ document.getElementById('lb-modal').addEventListener('click', function(e){
 
 (function(){
   const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');
-  const PAL=['#9b6dff','#6b9eff','#ff8fc0','#70e8d4','#ffbf69','#c4b0ff'];
-  let orbs=[];
+
+  // Dense star field
+  let stars=[], nebulas=[];
   function resize(){
-    c.width=innerWidth;c.height=innerHeight;orbs=[];
-    PAL.forEach(col=>orbs.push({x:Math.random()*c.width,y:Math.random()*c.height,r:150+Math.random()*200,vx:(Math.random()-0.5)*0.22,vy:(Math.random()-0.5)*0.22,col,a:0.065+Math.random()*0.075}));
+    c.width=innerWidth;c.height=innerHeight;
+    stars=[];
+    // 400 stars of varying sizes
+    for(let i=0;i<400;i++){
+      stars.push({
+        x:Math.random()*c.width,
+        y:Math.random()*c.height,
+        r:Math.random()<0.05?1.8+Math.random()*1.2:Math.random()<0.2?0.8+Math.random()*0.6:0.2+Math.random()*0.4,
+        a:0.4+Math.random()*0.6,
+        twinkleSpeed:0.004+Math.random()*0.012,
+        twinkleOffset:Math.random()*Math.PI*2,
+        col:Math.random()<0.1?'#b0d0ff':Math.random()<0.05?'#ffd080':'#ffffff'
+      });
+    }
+    // Nebula blobs
+    nebulas=[
+      {x:c.width*0.15,y:c.height*0.25,r:280,col:'#3a0060',a:0.18},
+      {x:c.width*0.75,y:c.height*0.15,r:220,col:'#001a60',a:0.22},
+      {x:c.width*0.5, y:c.height*0.6, r:340,col:'#200040',a:0.16},
+      {x:c.width*0.85,y:c.height*0.7, r:200,col:'#003040',a:0.20},
+      {x:c.width*0.3, y:c.height*0.8, r:180,col:'#400020',a:0.14},
+      {x:c.width*0.9, y:c.height*0.4, r:160,col:'#1a0050',a:0.18},
+    ];
   }
-  const STARS=Array.from({length:130},(_,i)=>({x:(Math.sin(i*127.1)*0.5+0.5),y:(Math.cos(i*311.7)*0.5+0.5),r:0.35+((i*73)%3)*0.38,a:0.3+((i*37)%10)*0.07}));
+
+  let frame=0;
   function draw(){
+    frame++;
     ctx.clearRect(0,0,c.width,c.height);
-    ctx.fillStyle='#07091a';ctx.fillRect(0,0,c.width,c.height);
-    STARS.forEach(s=>{ctx.globalAlpha=s.a;ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(s.x*c.width,s.y*c.height,s.r,0,Math.PI*2);ctx.fill();});
-    orbs.forEach(o=>{
-      o.x+=o.vx;o.y+=o.vy;
-      if(o.x<-o.r||o.x>c.width+o.r)o.vx*=-1;
-      if(o.y<-o.r||o.y>c.height+o.r)o.vy*=-1;
-      const rgb=parseInt(o.col.slice(1,3),16)+','+parseInt(o.col.slice(3,5),16)+','+parseInt(o.col.slice(5,7),16);
-      const g=ctx.createRadialGradient(o.x,o.y,0,o.x,o.y,o.r);
-      g.addColorStop(0,`rgba(${rgb},${o.a})`);g.addColorStop(1,`rgba(${rgb},0)`);
-      ctx.globalAlpha=1;ctx.fillStyle=g;ctx.beginPath();ctx.arc(o.x,o.y,o.r,0,Math.PI*2);ctx.fill();
+    // Deep space background
+    ctx.fillStyle='#020510';ctx.fillRect(0,0,c.width,c.height);
+
+    // Nebula clouds
+    nebulas.forEach(n=>{
+      const g=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r);
+      g.addColorStop(0,n.col.replace('#','rgba(').split('').join('')); // we'll do it differently
+      const r=parseInt(n.col.slice(1,3),16),gr=parseInt(n.col.slice(3,5),16),b=parseInt(n.col.slice(5,7),16);
+      const g2=ctx.createRadialGradient(n.x,n.y,0,n.x,n.y,n.r);
+      g2.addColorStop(0,`rgba(${r},${gr},${b},${n.a})`);
+      g2.addColorStop(0.5,`rgba(${r},${gr},${b},${n.a*0.4})`);
+      g2.addColorStop(1,`rgba(${r},${gr},${b},0)`);
+      ctx.fillStyle=g2;ctx.beginPath();ctx.arc(n.x,n.y,n.r,0,Math.PI*2);ctx.fill();
     });
+
+    // Stars with twinkle
+    stars.forEach(s=>{
+      const twinkle=0.5+0.5*Math.sin(frame*s.twinkleSpeed+s.twinkleOffset);
+      ctx.globalAlpha=s.a*twinkle;
+      ctx.fillStyle=s.col;
+      ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.fill();
+      // Cross sparkle on bigger stars
+      if(s.r>1.2){
+        ctx.globalAlpha=s.a*twinkle*0.4;
+        ctx.strokeStyle=s.col;ctx.lineWidth=0.5;
+        ctx.beginPath();ctx.moveTo(s.x-s.r*3,s.y);ctx.lineTo(s.x+s.r*3,s.y);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(s.x,s.y-s.r*3);ctx.lineTo(s.x,s.y+s.r*3);ctx.stroke();
+      }
+    });
+    ctx.globalAlpha=1;
     requestAnimationFrame(draw);
   }
   window.addEventListener('resize',resize);resize();draw();

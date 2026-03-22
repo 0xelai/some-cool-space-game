@@ -206,27 +206,69 @@ body { font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-seri
 .hlives{letter-spacing:5px;color:#ffb3c8;}
 .haddr{color:#c8b4ff;font-size:11px;font-family:monospace;}
 
-/* game over overlay inside game screen */
+/* game over overlay */
 #game-overlay {
   position:absolute;z-index:30;top:0;left:0;right:0;bottom:0;
   display:none;align-items:center;justify-content:center;
-  background:rgba(7,9,26,0.75);backdrop-filter:blur(10px);
+  background:rgba(4,6,20,0.82);backdrop-filter:blur(20px);
 }
 .ov {
-  background:rgba(255,255,255,0.07);backdrop-filter:blur(32px);
-  border:1px solid rgba(255,255,255,0.17);border-radius:26px;
-  padding:36px 40px;text-align:center;max-width:310px;
+  position:relative;
+  background:linear-gradient(160deg,rgba(255,255,255,0.13) 0%,rgba(255,255,255,0.05) 60%,rgba(180,160,255,0.08) 100%);
+  backdrop-filter:blur(40px) saturate(180%);
+  -webkit-backdrop-filter:blur(40px) saturate(180%);
+  border:1px solid rgba(255,255,255,0.22);
+  border-top:1px solid rgba(255,255,255,0.38);
+  border-left:1px solid rgba(255,255,255,0.28);
+  border-radius:28px;
+  padding:0 36px 32px;
+  text-align:center;
+  max-width:340px;
+  width:calc(100% - 40px);
+  box-shadow:0 24px 60px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.25),inset 0 -1px 0 rgba(255,255,255,0.06);
+  overflow:hidden;
 }
-.ov-ico{font-size:44px;margin-bottom:10px;}
-.ov-ttl{font-size:23px;font-weight:700;margin-bottom:4px;}
-.ov-sub{font-size:13px;color:rgba(255,255,255,0.42);margin-bottom:18px;}
-.ov-sc{font-size:50px;font-weight:800;color:#cdb8ff;letter-spacing:-1px;margin-bottom:2px;}
-.ov-scl{font-size:12px;color:rgba(255,255,255,0.32);margin-bottom:22px;}
-.ov-btns{display:flex;gap:10px;justify-content:center;}
-.btn-ag{padding:12px 22px;border-radius:13px;border:none;background:linear-gradient(135deg,#c0a0ff,#6ba0ff);color:#fff;font-size:14px;font-weight:600;cursor:pointer;transition:opacity 0.18s;}
-.btn-ag:hover{opacity:0.88;}
-.btn-bk{padding:12px 18px;border-radius:13px;border:1px solid rgba(255,255,255,0.13);background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.46);font-size:14px;cursor:pointer;}
-.btn-bk:hover{background:rgba(255,255,255,0.09);}
+.ov::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:60%;
+  background:linear-gradient(180deg,rgba(255,255,255,0.07) 0%,transparent 100%);
+  border-radius:28px 28px 0 0;pointer-events:none;
+}
+.ov-monsters {
+  display:flex;justify-content:center;align-items:flex-end;
+  margin:0 -36px 0;height:130px;overflow:visible;position:relative;
+}
+.ov-ttl{font-family:'Fredoka One',sans-serif;font-size:26px;letter-spacing:1px;color:#fff;margin-bottom:3px;text-shadow:0 2px 20px rgba(180,140,255,0.4);}
+.ov-sub{font-size:13px;color:rgba(255,255,255,0.5);margin-bottom:16px;font-family:'Nunito',sans-serif;}
+.ov-sc{font-family:'Fredoka One',sans-serif;font-size:58px;color:#fff;letter-spacing:-1px;margin-bottom:0;line-height:1;text-shadow:0 0 30px rgba(200,160,255,0.5);}
+.ov-scl{font-size:11px;color:rgba(255,255,255,0.3);margin-bottom:14px;letter-spacing:2px;text-transform:uppercase;font-family:'Nunito',sans-serif;}
+.ov-btns{display:flex;gap:10px;justify-content:center;margin-top:4px;}
+.btn-ag{
+  padding:13px 26px;border-radius:14px;border:none;
+  background:linear-gradient(135deg,#c0a0ff 0%,#8060e0 50%,#6040c0 100%);
+  color:#fff;font-size:15px;font-weight:700;cursor:pointer;
+  font-family:'Fredoka One',sans-serif;letter-spacing:1px;
+  box-shadow:0 4px 0 #3020a0,0 6px 20px rgba(120,80,220,0.4);
+  transition:transform 0.1s,box-shadow 0.1s;
+}
+.btn-ag:hover{transform:translateY(-2px);}
+.btn-ag:active{transform:translateY(2px);box-shadow:0 1px 0 #3020a0;}
+.btn-bk{
+  padding:13px 20px;border-radius:14px;
+  border:1px solid rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.08);
+  color:rgba(255,255,255,0.6);font-size:15px;cursor:pointer;
+  font-family:'Fredoka One',sans-serif;letter-spacing:1px;
+  transition:background 0.18s;
+}
+.btn-bk:hover{background:rgba(255,255,255,0.14);}
+#ov-waiting{
+  display:none;margin-top:14px;
+  background:rgba(255,200,60,0.1);border:1px solid rgba(255,200,60,0.3);
+  border-radius:12px;padding:10px 14px;
+  font-size:13px;color:#ffe060;font-family:'Nunito',sans-serif;font-weight:600;
+  animation:waitPulse 1.4s ease-in-out infinite;
+}
+@keyframes waitPulse{0%,100%{opacity:1}50%{opacity:0.5}}
 
 #gameCanvas{display:block;background:transparent;position:relative;z-index:10;}
 #hint{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:12px;color:rgba(255,255,255,0.18);pointer-events:none;z-index:15;}
@@ -328,16 +370,111 @@ body { font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-seri
   <canvas id="gameCanvas"></canvas>
   <div id="game-overlay">
     <div class="ov">
-      <div class="ov-ico" id="ov-ico">💫</div>
-      <div class="ov-ttl" id="ov-ttl">Game Over</div>
+      <!-- monster characters popping out of top -->
+      <div class="ov-monsters">
+        <!-- LEFT monster — tall bandaged creature holding a toy -->
+        <svg width="110" height="130" viewBox="0 0 110 130" xmlns="http://www.w3.org/2000/svg" style="margin-right:-10px;flex-shrink:0;">
+          <!-- body wrapped in bandages -->
+          <rect x="30" y="55" width="38" height="50" rx="8" fill="#c8b48a"/>
+          <rect x="30" y="55" width="38" height="7" rx="2" fill="#b09a6a"/>
+          <rect x="30" y="68" width="38" height="5" rx="2" fill="#b09a6a"/>
+          <rect x="30" y="81" width="38" height="5" rx="2" fill="#b09a6a"/>
+          <rect x="30" y="94" width="38" height="5" rx="2" fill="#b09a6a"/>
+          <!-- worn label on chest -->
+          <rect x="36" y="62" width="26" height="20" rx="3" fill="#d4b87a" stroke="#a08050" stroke-width="1"/>
+          <rect x="38" y="65" width="22" height="3" rx="1" fill="#a08050" opacity="0.5"/>
+          <rect x="38" y="70" width="16" height="2" rx="1" fill="#a08050" opacity="0.4"/>
+          <rect x="38" y="74" width="19" height="2" rx="1" fill="#a08050" opacity="0.4"/>
+          <!-- neck -->
+          <rect x="40" y="44" width="18" height="14" rx="5" fill="#b8a478"/>
+          <!-- head — long oval -->
+          <ellipse cx="49" cy="32" rx="20" ry="22" fill="#c8b48a"/>
+          <ellipse cx="49" cy="30" rx="17" ry="19" fill="#d8c49a"/>
+          <!-- bandage on head -->
+          <rect x="29" y="24" width="40" height="7" rx="3" fill="#e0d0a8" opacity="0.9"/>
+          <rect x="29" y="16" width="40" height="5" rx="2" fill="#e0d0a8" opacity="0.8"/>
+          <!-- eyes — big googly -->
+          <ellipse cx="42" cy="32" rx="7" ry="8" fill="white"/>
+          <ellipse cx="56" cy="32" rx="7" ry="8" fill="white"/>
+          <circle cx="43" cy="33" r="4" fill="#3a2810"/>
+          <circle cx="57" cy="33" r="4" fill="#3a2810"/>
+          <circle cx="44" cy="31" r="1.5" fill="white"/>
+          <circle cx="58" cy="31" r="1.5" fill="white"/>
+          <!-- teeth smile -->
+          <path d="M40,44 Q49,50 58,44" stroke="#8a6a40" stroke-width="1.5" fill="none"/>
+          <rect x="43" y="44" width="5" height="5" rx="1" fill="white" stroke="#8a6a40" stroke-width="0.8"/>
+          <rect x="50" y="44" width="5" height="5" rx="1" fill="white" stroke="#8a6a40" stroke-width="0.8"/>
+          <!-- left arm raised holding toy -->
+          <path d="M30,70 Q10,55 8,40" stroke="#c8b48a" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path d="M30,70 Q10,55 8,40" stroke="#b09a6a" stroke-width="3" stroke-linecap="round" fill="none" stroke-dasharray="4,4"/>
+          <!-- toy (little bear) -->
+          <circle cx="8" cy="34" r="8" fill="#d4a060"/>
+          <circle cx="4" cy="28" r="4" fill="#d4a060"/>
+          <circle cx="12" cy="28" r="4" fill="#d4a060"/>
+          <circle cx="8" cy="34" r="5" fill="#c09050"/>
+          <!-- right arm down -->
+          <path d="M68,75 Q82,82 86,95" stroke="#c8b48a" stroke-width="10" stroke-linecap="round" fill="none"/>
+          <path d="M68,75 Q82,82 86,95" stroke="#b09a6a" stroke-width="3" stroke-linecap="round" fill="none" stroke-dasharray="4,4"/>
+          <!-- legs -->
+          <rect x="33" y="100" width="13" height="22" rx="5" fill="#b09a6a"/>
+          <rect x="50" y="100" width="13" height="22" rx="5" fill="#b09a6a"/>
+          <ellipse cx="39" cy="122" rx="9" ry="5" fill="#908060"/>
+          <ellipse cx="56" cy="122" rx="9" ry="5" fill="#908060"/>
+        </svg>
+        <!-- RIGHT monster — shorter, box-shaped, angry -->
+        <svg width="95" height="110" viewBox="0 0 95 110" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;">
+          <!-- box body -->
+          <rect x="18" y="42" width="54" height="44" rx="6" fill="#c8a870"/>
+          <rect x="18" y="42" width="54" height="44" rx="6" fill="none" stroke="#a08850" stroke-width="1.5"/>
+          <!-- worn label -->
+          <rect x="24" y="50" width="40" height="26" rx="3" fill="#d4b87a" stroke="#a08050" stroke-width="1"/>
+          <rect x="27" y="54" width="34" height="3" rx="1" fill="#a08050" opacity="0.5"/>
+          <rect x="27" y="59" width="24" height="2" rx="1" fill="#a08050" opacity="0.4"/>
+          <rect x="27" y="63" width="28" height="2" rx="1" fill="#a08050" opacity="0.4"/>
+          <rect x="27" y="67" width="20" height="2" rx="1" fill="#a08050" opacity="0.4"/>
+          <!-- head -->
+          <ellipse cx="45" cy="28" rx="22" ry="20" fill="#c8b48a"/>
+          <ellipse cx="45" cy="27" rx="18" ry="16" fill="#d8c49a"/>
+          <!-- angry brow -->
+          <path d="M28,20 Q36,16 40,20" stroke="#6a4a20" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M50,20 Q54,16 62,20" stroke="#6a4a20" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <!-- eyes -->
+          <ellipse cx="37" cy="25" rx="6" ry="7" fill="white"/>
+          <ellipse cx="53" cy="25" rx="6" ry="7" fill="white"/>
+          <circle cx="37" cy="27" r="4" fill="#2a1808"/>
+          <circle cx="53" cy="27" r="4" fill="#2a1808"/>
+          <circle cx="38" cy="25" r="1.5" fill="white"/>
+          <circle cx="54" cy="25" r="1.5" fill="white"/>
+          <!-- open mouth with teeth -->
+          <path d="M35,38 Q45,46 55,38" fill="#6a2010"/>
+          <rect x="38" y="38" width="5" height="5" rx="1" fill="white"/>
+          <rect x="45" y="38" width="5" height="5" rx="1" fill="white"/>
+          <!-- left arm reaching out -->
+          <path d="M18,60 Q2,52 0,42" stroke="#c8b48a" stroke-width="9" stroke-linecap="round" fill="none"/>
+          <!-- right arm -->
+          <path d="M72,60 Q86,54 90,46" stroke="#c8b48a" stroke-width="9" stroke-linecap="round" fill="none"/>
+          <!-- little toy in right hand -->
+          <circle cx="90" cy="40" r="6" fill="#c08858"/>
+          <circle cx="86" cy="34" r="3.5" fill="#c08858"/>
+          <circle cx="94" cy="34" r="3.5" fill="#c08858"/>
+          <!-- legs -->
+          <rect x="24" y="82" width="14" height="20" rx="5" fill="#a08850"/>
+          <rect x="52" y="82" width="14" height="20" rx="5" fill="#a08850"/>
+          <ellipse cx="31" cy="102" rx="10" ry="5" fill="#806840"/>
+          <ellipse cx="59" cy="102" rx="10" ry="5" fill="#806840"/>
+        </svg>
+      </div>
+
+      <div class="ov-ttl" id="ov-ttl">GAME OVER</div>
       <div class="ov-sub" id="ov-sub">You ran out of lives</div>
       <div class="ov-sc" id="ov-sc">0</div>
-      <div class="ov-scl">final score</div>
-      <div id="ov-lb-peek" style="margin:12px 0 18px;font-size:12px;color:rgba(255,255,255,0.35);min-height:20px;"></div>
+      <div class="ov-scl">FINAL SCORE</div>
+      <div id="ov-lb-peek" style="margin:8px 0 16px;font-size:13px;color:rgba(255,255,255,0.4);min-height:18px;font-family:'Nunito',sans-serif;font-weight:600;"></div>
       <div class="ov-btns">
-        <button class="btn-ag" id="ov-play-again">Play again</button>
-        <button class="btn-bk" id="ov-menu">Menu</button>
+        <button class="btn-ag" id="ov-play-again">PLAY AGAIN</button>
+        <button class="btn-bk" id="ov-menu">MENU</button>
       </div>
+      <div id="ov-waiting">Open Sphere wallet and confirm 10 UCT to play again</div>
     </div>
   </div>
   <div id="hint">SPACE / tap to jump · double jump available</div>
@@ -957,8 +1094,7 @@ function hit(){
     SFX.stopMenuMusic();
     const coins=Math.floor(S.score/100);
     const player = window.SphereWallet?.identity?.nametag || '';
-    document.getElementById('ov-ico').textContent='💫';
-    document.getElementById('ov-ttl').textContent='Game Over';
+    document.getElementById('ov-ttl').textContent='GAME OVER';
     document.getElementById('ov-sub').textContent=window.SphereWallet?.isConnected ? `You earned ${coins} UCT` : 'You ran out of lives';
     document.getElementById('ov-sc').textContent=S.score.toLocaleString();
     document.getElementById('ov-lb-peek').textContent='Submitting score...';
@@ -1117,8 +1253,11 @@ function updLives(){
 
 /* ── SCREEN MANAGEMENT ── */
 function startGame(){
-  SFX.setOnMenu(false); // hard-stops music, prevents restart
+  SFX.setOnMenu(false);
   SFX.resetTier();
+  document.getElementById('ov-waiting').style.display='none';
+  document.getElementById('ov-play-again').disabled=false;
+  document.getElementById('ov-play-again').style.opacity='1';
   S=newState();
   document.getElementById('game-overlay').style.display='none';
   document.getElementById('menu-screen').style.display='none';
@@ -1145,9 +1284,12 @@ window._onWalletReady = startGame;
 // Game overlay buttons
 document.getElementById('ov-play-again').onclick = function(){
   if(window.SphereWallet?.isConnected){
+    document.getElementById('ov-waiting').style.display='block';
+    document.getElementById('ov-play-again').disabled=true;
+    document.getElementById('ov-play-again').style.opacity='0.5';
     window.SphereWallet.depositAndRestart();
   } else {
-    goToMenu(); // no wallet = go back to menu
+    goToMenu();
   }
 };
 document.getElementById('ov-menu').onclick = goToMenu;

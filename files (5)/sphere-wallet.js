@@ -317,9 +317,6 @@ function updateUI(phase) {
     case 'gameover':
       if (walletInfo) walletInfo.style.display = 'block';
       if (depositBtn) { depositBtn.style.display = 'block'; depositBtn.textContent = `Play Again (${ENTRY_FEE} ${COIN_ID})`; depositBtn.disabled = false; }
-      // Show menu again
-      if (menuScreen) menuScreen.style.display = 'flex';
-      if (gameScreen) gameScreen.style.display = 'none';
       break;
   }
 }

@@ -240,6 +240,12 @@ body { font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-seri
 <!-- ══ MENU SCREEN ══ -->
 <div id="menu-screen">
 
+  <!-- LEADERBOARD BUTTON — top right -->
+  <button onclick="openLeaderboard()" style="position:absolute;top:18px;right:18px;z-index:20;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.22);border-radius:12px;padding:9px 16px;color:#fff;font-family:'Fredoka One',sans-serif;font-size:15px;letter-spacing:1px;cursor:pointer;display:flex;align-items:center;gap:7px;backdrop-filter:blur(12px);transition:background 0.18s;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+    LEADERBOARD
+  </button>
+
   <!-- floating planets & rocks -->
   <div class="deco deco-moon"></div>
   <div class="deco deco-orbit"></div>
@@ -249,7 +255,7 @@ body { font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-seri
   <div class="deco deco-rock2"></div>
   <div class="deco deco-rock3"></div>
 
-  <!-- twinkling stars — more and bigger -->
+  <!-- twinkling stars -->
   <div class="twinkle" style="width:4px;height:4px;top:10%;left:20%;animation-duration:1.8s;animation-delay:0s;"></div>
   <div class="twinkle" style="width:5px;height:5px;top:22%;left:52%;animation-duration:2.4s;animation-delay:0.4s;"></div>
   <div class="twinkle" style="width:3px;height:3px;top:55%;left:72%;animation-duration:1.6s;animation-delay:0.9s;"></div>
@@ -266,7 +272,6 @@ body { font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-seri
   <div class="menu-card">
     <h1 class="menu-title">SPACE<span class="title-line2">JUMPER</span></h1>
 
-    <!-- wallet info strip (shown after connect) -->
     <div id="sphere-wallet-info">
       <div class="wallet-row">
         <span id="sphere-address">—</span>
@@ -286,6 +291,20 @@ body { font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-seri
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
       SOUND ON
     </button>
+  </div>
+</div>
+
+<!-- ══ LEADERBOARD MODAL ══ -->
+<div id="lb-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(5,7,20,0.88);backdrop-filter:blur(18px);align-items:center;justify-content:center;">
+  <div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:26px;padding:36px 32px;max-width:420px;width:calc(100% - 32px);max-height:85vh;overflow-y:auto;position:relative;">
+    <button onclick="closeLeaderboard()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:8px;padding:5px 11px;color:rgba(255,255,255,0.5);cursor:pointer;font-size:13px;">✕</button>
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="font-family:'Fredoka One',sans-serif;font-size:26px;color:#ffe060;letter-spacing:2px;text-shadow:0 3px 0 #a06000;">LEADERBOARD</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.35);margin-top:4px;" id="lb-date">Today's top scores</div>
+    </div>
+    <div id="lb-list">
+      <div style="text-align:center;color:rgba(255,255,255,0.3);font-size:14px;padding:20px;">Loading...</div>
+    </div>
   </div>
 </div>
 
@@ -312,6 +331,7 @@ body { font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-seri
       <div class="ov-sub" id="ov-sub">You ran out of lives</div>
       <div class="ov-sc" id="ov-sc">0</div>
       <div class="ov-scl">final score</div>
+      <div id="ov-lb-peek" style="margin:12px 0 18px;font-size:12px;color:rgba(255,255,255,0.35);min-height:20px;"></div>
       <div class="ov-btns">
         <button class="btn-ag" id="ov-play-again">Play again</button>
         <button class="btn-bk" id="ov-menu">Menu</button>
@@ -537,8 +557,85 @@ document.getElementById('menu-screen').addEventListener('click', _tryStartMenuMu
 document.addEventListener('keydown', (e)=>{ if(document.getElementById('menu-screen').style.display!=='none') SFX.startMenuMusic(); }, {once:true});
 
 /* ════════════════════════════════════════
-   PASTEL BG
+   LEADERBOARD — Supabase
 ════════════════════════════════════════ */
+const SB_URL  = 'https://sknqhazefnczusegfdyi.supabase.co';
+const SB_KEY  = 'sb_publishable_h942Kq8qPHPZng9ZV-ZV6w_6Ol8swgx';
+const SB_HDR  = { 'Content-Type':'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY };
+
+// Get today's date range (UTC)
+function todayRange(){
+  const now = new Date();
+  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const end   = new Date(start.getTime() + 86400000);
+  return { start: start.toISOString(), end: end.toISOString() };
+}
+
+async function submitScore(player, score){
+  if(!player || score <= 0) return;
+  try {
+    await fetch(`${SB_URL}/rest/v1/scores`, {
+      method: 'POST',
+      headers: { ...SB_HDR, 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ player, score })
+    });
+  } catch(e){ console.warn('Score submit failed', e); }
+}
+
+async function fetchTodayScores(){
+  const { start, end } = todayRange();
+  const res = await fetch(
+    `${SB_URL}/rest/v1/scores?select=player,score,created_at&created_at=gte.${start}&created_at=lt.${end}&order=score.desc&limit=20`,
+    { headers: SB_HDR }
+  );
+  return res.ok ? await res.json() : [];
+}
+
+// Keep only best score per player for today
+function dedupe(rows){
+  const map = {};
+  rows.forEach(r => { if(!map[r.player] || r.score > map[r.player]) map[r.player] = r.score; });
+  return Object.entries(map).map(([player,score])=>({player,score})).sort((a,b)=>b.score-a.score).slice(0,10);
+}
+
+function renderLB(rows, highlightPlayer){
+  const medals = ['🥇','🥈','🥉'];
+  if(!rows.length) return '<div style="text-align:center;color:rgba(255,255,255,0.3);padding:20px;font-size:14px;">No scores yet today — be the first!</div>';
+  return rows.map((r,i)=>{
+    const isYou = r.player === highlightPlayer;
+    const rank  = medals[i] || `<span style="color:rgba(255,255,255,0.4);font-size:13px;">#${i+1}</span>`;
+    return `<div style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;margin-bottom:6px;background:${isYou?'rgba(255,220,80,0.12)':'rgba(255,255,255,0.04)'};border:1px solid ${isYou?'rgba(255,220,80,0.3)':'rgba(255,255,255,0.07)'};">
+      <span style="width:28px;text-align:center;font-size:18px;">${rank}</span>
+      <span style="flex:1;font-family:'Nunito',sans-serif;font-weight:700;color:${isYou?'#ffe060':'rgba(255,255,255,0.85)'};font-size:14px;">${r.player}${isYou?' 👈':''}</span>
+      <span style="font-family:'Fredoka One',sans-serif;font-size:17px;color:${isYou?'#ffe060':'#c8b8ff'};">${r.score.toLocaleString()}</span>
+    </div>`;
+  }).join('');
+}
+
+async function openLeaderboard(){
+  document.getElementById('lb-modal').style.display='flex';
+  document.getElementById('lb-list').innerHTML='<div style="text-align:center;color:rgba(255,255,255,0.3);font-size:14px;padding:20px;">Loading...</div>';
+  const today = new Date();
+  document.getElementById('lb-date').textContent = today.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}) + ' — Top 10';
+  try {
+    const rows = dedupe(await fetchTodayScores());
+    const me   = window.SphereWallet?.identity?.nametag || '';
+    document.getElementById('lb-list').innerHTML = renderLB(rows, me);
+  } catch(e){
+    document.getElementById('lb-list').innerHTML='<div style="text-align:center;color:#ffb3b3;font-size:13px;padding:20px;">Could not load scores.</div>';
+  }
+}
+
+function closeLeaderboard(){
+  document.getElementById('lb-modal').style.display='none';
+}
+
+// Close modal on backdrop click
+document.getElementById('lb-modal').addEventListener('click', function(e){
+  if(e.target === this) closeLeaderboard();
+});
+
+
 (function(){
   const c=document.getElementById('bg-canvas'),ctx=c.getContext('2d');
   const PAL=['#9b6dff','#6b9eff','#ff8fc0','#70e8d4','#ffbf69','#c4b0ff'];
@@ -704,11 +801,25 @@ function hit(){
     SFX.gameOver();
     SFX.stopMenuMusic();
     const coins=Math.floor(S.score/100);
+    const player = window.SphereWallet?.identity?.nametag || '';
     document.getElementById('ov-ico').textContent='💫';
     document.getElementById('ov-ttl').textContent='Game Over';
     document.getElementById('ov-sub').textContent=window.SphereWallet?.isConnected ? `You earned ${coins} UCT` : 'You ran out of lives';
     document.getElementById('ov-sc').textContent=S.score.toLocaleString();
+    document.getElementById('ov-lb-peek').textContent='Submitting score...';
     document.getElementById('game-overlay').style.display='flex';
+    // Submit to leaderboard then show rank
+    if(player && S.score > 0){
+      submitScore(player, S.score).then(async ()=>{
+        const rows = dedupe(await fetchTodayScores());
+        const rank = rows.findIndex(r=>r.player===player) + 1;
+        const peek = document.getElementById('ov-lb-peek');
+        if(rank > 0) peek.innerHTML = `You're <strong style="color:#ffe060;">#${rank}</strong> on today's leaderboard!`;
+        else peek.textContent = 'Score saved to leaderboard!';
+      }).catch(()=>{ document.getElementById('ov-lb-peek').textContent=''; });
+    } else {
+      document.getElementById('ov-lb-peek').textContent='';
+    }
     if(window.SphereWallet?.isConnected){
       window.SphereWallet.requestPayout(coins);
       window.SphereWallet.resetDeposit();

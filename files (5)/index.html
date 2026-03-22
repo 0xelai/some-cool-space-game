@@ -206,128 +206,131 @@ body { font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-seri
 .hlives{letter-spacing:5px;color:#ffb3c8;}
 .haddr{color:#c8b4ff;font-size:11px;font-family:monospace;}
 
-/* ── LIQUID CRYSTAL GAME OVER ── */
+/* ── TRUE LIQUID GLASS ── */
 #game-overlay {
   position:absolute;z-index:30;top:0;left:0;right:0;bottom:0;
   display:none;align-items:center;justify-content:center;
-  background:rgba(2,4,14,0.75);
-  backdrop-filter:blur(28px);
+  background:rgba(0,0,0,0.35);
+  backdrop-filter:blur(2px);
 }
 .ov {
   position:relative;
-  width:calc(100% - 40px);
-  max-width:320px;
-  border-radius:32px;
-  padding:32px 32px 28px;
+  width:calc(100% - 48px);
+  max-width:300px;
+  border-radius:36px;
+  padding:36px 28px 28px;
   text-align:center;
   overflow:hidden;
-  /* the glass stack */
-  background:
-    linear-gradient(135deg,
-      rgba(255,255,255,0.18) 0%,
-      rgba(255,255,255,0.04) 40%,
-      rgba(200,210,255,0.06) 70%,
-      rgba(255,255,255,0.10) 100%);
-  backdrop-filter:blur(60px) saturate(220%) brightness(1.08);
-  -webkit-backdrop-filter:blur(60px) saturate(220%) brightness(1.08);
-  /* crystal border — bright top/left, dim bottom/right */
-  border-top:1.5px solid rgba(255,255,255,0.65);
-  border-left:1.5px solid rgba(255,255,255,0.45);
-  border-right:1.5px solid rgba(255,255,255,0.12);
-  border-bottom:1.5px solid rgba(255,255,255,0.10);
-  /* deep outer glow + inner shine */
+  /* silver-white glass — light, not dark */
+  background:rgba(210,215,230,0.22);
+  backdrop-filter:blur(80px) saturate(160%) brightness(1.6);
+  -webkit-backdrop-filter:blur(80px) saturate(160%) brightness(1.6);
+  /* physical glass borders */
+  border:none;
+  outline: 1.5px solid rgba(255,255,255,0.55);
+  /* deep physical shadow — like glass sitting on a table */
   box-shadow:
-    0 32px 80px rgba(0,0,0,0.55),
-    0 8px 24px rgba(0,0,0,0.35),
-    inset 0 1.5px 0 rgba(255,255,255,0.55),
-    inset 0 -1px 0 rgba(255,255,255,0.08),
-    inset 1px 0 0 rgba(255,255,255,0.25),
-    inset -1px 0 0 rgba(255,255,255,0.06);
+    0 2px 0 rgba(255,255,255,0.9),
+    0 40px 80px rgba(0,0,0,0.6),
+    0 12px 24px rgba(0,0,0,0.4),
+    inset 0 1.5px 0 rgba(255,255,255,1),
+    inset 0 -1px 0 rgba(255,255,255,0.15),
+    inset 1px 0 0 rgba(255,255,255,0.6),
+    inset -1px 0 0 rgba(255,255,255,0.15);
 }
-/* top reflection streak */
+/* curved top reflection — the key to glass */
 .ov::before {
   content:'';
-  position:absolute;top:0;left:8%;right:8%;height:44%;
-  background:linear-gradient(180deg,
-    rgba(255,255,255,0.22) 0%,
-    rgba(255,255,255,0.06) 50%,
-    transparent 100%);
-  border-radius:32px 32px 60% 60%;
+  position:absolute;top:0;left:0;right:0;height:52%;
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,0.55) 0%,
+      rgba(255,255,255,0.18) 20%,
+      rgba(255,255,255,0.04) 60%,
+      transparent 100%);
+  border-radius:36px 36px 50% 50% / 36px 36px 30px 30px;
   pointer-events:none;
+  z-index:1;
 }
-/* bottom inner shadow */
+/* bottom fade */
 .ov::after {
   content:'';
-  position:absolute;bottom:0;left:0;right:0;height:35%;
-  background:linear-gradient(0deg,rgba(0,0,0,0.25) 0%,transparent 100%);
-  border-radius:0 0 32px 32px;
+  position:absolute;bottom:0;left:0;right:0;height:30%;
+  background:linear-gradient(0deg,rgba(0,0,0,0.18) 0%,transparent 100%);
+  border-radius:0 0 36px 36px;
   pointer-events:none;
+  z-index:1;
 }
+.ov > * { position:relative; z-index:2; }
+
 .ov-ttl{
-  font-family:'Fredoka One',sans-serif;font-size:28px;letter-spacing:2px;
+  font-family:'Fredoka One',sans-serif;
+  font-size:28px;letter-spacing:1px;
   color:#fff;margin-bottom:4px;
-  text-shadow:0 1px 12px rgba(255,255,255,0.4),0 0 40px rgba(180,200,255,0.3);
+  text-shadow:0 1px 3px rgba(0,0,0,0.5),0 0 20px rgba(255,255,255,0.2);
 }
-.ov-sub{font-size:13px;color:rgba(255,255,255,0.45);margin-bottom:14px;font-family:'Nunito',sans-serif;min-height:0;}
+.ov-sub{min-height:0;font-size:0;}
 .ov-sc{
-  font-family:'Fredoka One',sans-serif;font-size:64px;color:#fff;
-  letter-spacing:-2px;line-height:1;
-  text-shadow:0 2px 0 rgba(0,0,0,0.3),0 0 40px rgba(200,220,255,0.5);
+  font-family:'Fredoka One',sans-serif;font-size:68px;
+  color:#fff;letter-spacing:-2px;line-height:1;
+  text-shadow:0 2px 4px rgba(0,0,0,0.4),0 0 30px rgba(255,255,255,0.15);
 }
 .ov-scl{
-  font-size:10px;color:rgba(255,255,255,0.35);margin-bottom:16px;
-  letter-spacing:3px;font-family:'Nunito',sans-serif;font-weight:700;
+  font-size:10px;color:rgba(255,255,255,0.55);
+  margin-bottom:20px;letter-spacing:4px;
+  font-family:'Nunito',sans-serif;font-weight:800;
 }
-.ov-btns{display:flex;gap:10px;justify-content:center;margin-top:6px;}
-/* crystal play again button */
+.ov-btns{display:flex;gap:10px;justify-content:center;margin-top:4px;}
+
+/* glass pill buttons — look like iOS 26 */
 .btn-ag{
-  padding:13px 28px;border-radius:16px;border:none;
-  background:linear-gradient(135deg,
-    rgba(255,255,255,0.35) 0%,
-    rgba(180,160,255,0.25) 50%,
-    rgba(120,100,220,0.35) 100%);
-  backdrop-filter:blur(20px);
-  border-top:1px solid rgba(255,255,255,0.7);
-  border-left:1px solid rgba(255,255,255,0.4);
-  border-right:1px solid rgba(255,255,255,0.1);
-  border-bottom:1px solid rgba(255,255,255,0.08);
-  box-shadow:0 4px 20px rgba(100,80,200,0.35),inset 0 1px 0 rgba(255,255,255,0.5);
+  flex:1;padding:14px 0;border-radius:20px;border:none;
+  background:rgba(255,255,255,0.28);
+  backdrop-filter:blur(40px) brightness(1.4);
+  outline:1px solid rgba(255,255,255,0.5);
+  box-shadow:
+    0 1.5px 0 rgba(255,255,255,0.95),
+    0 8px 24px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    inset 0 -1px 0 rgba(255,255,255,0.1);
   color:#fff;font-size:15px;font-weight:800;cursor:pointer;
   font-family:'Fredoka One',sans-serif;letter-spacing:1.5px;
-  transition:transform 0.12s,box-shadow 0.12s;
-  text-shadow:0 1px 8px rgba(200,180,255,0.6);
+  text-shadow:0 1px 4px rgba(0,0,0,0.5);
+  transition:transform 0.1s,box-shadow 0.1s;
 }
-.btn-ag:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 8px 28px rgba(120,100,220,0.5),inset 0 1px 0 rgba(255,255,255,0.6);}
-.btn-ag:active{transform:translateY(1px) scale(0.98);}
-/* crystal menu button */
+.btn-ag::before{
+  content:'';position:absolute;top:0;left:5%;right:5%;height:50%;
+  background:linear-gradient(180deg,rgba(255,255,255,0.4) 0%,transparent 100%);
+  border-radius:20px 20px 50% 50%;pointer-events:none;
+}
+.btn-ag{position:relative;overflow:hidden;}
+.btn-ag:hover{transform:translateY(-1px);box-shadow:0 1.5px 0 rgba(255,255,255,0.95),0 12px 30px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.9);}
+.btn-ag:active{transform:translateY(1px);}
+
 .btn-bk{
-  padding:13px 20px;border-radius:16px;
-  background:rgba(255,255,255,0.07);
-  backdrop-filter:blur(20px);
-  border-top:1px solid rgba(255,255,255,0.35);
-  border-left:1px solid rgba(255,255,255,0.2);
-  border-right:1px solid rgba(255,255,255,0.05);
-  border-bottom:1px solid rgba(255,255,255,0.04);
-  box-shadow:inset 0 1px 0 rgba(255,255,255,0.2);
-  color:rgba(255,255,255,0.65);font-size:15px;cursor:pointer;
+  flex:1;padding:14px 0;border-radius:20px;border:none;
+  background:rgba(255,255,255,0.12);
+  backdrop-filter:blur(40px);
+  outline:1px solid rgba(255,255,255,0.3);
+  box-shadow:0 1px 0 rgba(255,255,255,0.7),0 6px 16px rgba(0,0,0,0.25),inset 0 1px 0 rgba(255,255,255,0.6);
+  color:rgba(255,255,255,0.75);font-size:15px;cursor:pointer;
   font-family:'Fredoka One',sans-serif;letter-spacing:1px;
-  transition:background 0.18s,transform 0.12s;
+  text-shadow:0 1px 3px rgba(0,0,0,0.4);
+  transition:transform 0.1s;
 }
-.btn-bk:hover{background:rgba(255,255,255,0.13);transform:translateY(-1px);}
+.btn-bk:hover{transform:translateY(-1px);background:rgba(255,255,255,0.18);}
+
 #ov-waiting{
   display:none;margin-top:14px;
-  background:rgba(255,220,60,0.08);
-  border-top:1px solid rgba(255,220,60,0.5);
-  border-left:1px solid rgba(255,220,60,0.3);
-  border-right:1px solid rgba(255,220,60,0.1);
-  border-bottom:1px solid rgba(255,220,60,0.1);
+  background:rgba(255,255,255,0.12);
+  outline:1px solid rgba(255,255,255,0.35);
   border-radius:14px;padding:10px 14px;
-  font-size:13px;color:rgba(255,230,120,0.95);
-  font-family:'Nunito',sans-serif;font-weight:700;
-  box-shadow:inset 0 1px 0 rgba(255,255,200,0.2);
+  font-size:12px;color:rgba(255,255,255,0.8);
+  font-family:'Nunito',sans-serif;font-weight:700;letter-spacing:0.3px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.5);
   animation:waitPulse 1.4s ease-in-out infinite;
 }
-@keyframes waitPulse{0%,100%{opacity:1}50%{opacity:0.5}}
+@keyframes waitPulse{0%,100%{opacity:1}50%{opacity:0.45}}
 
 #gameCanvas{display:block;background:transparent;position:relative;z-index:10;}
 #hint{position:absolute;bottom:16px;left:0;right:0;text-align:center;font-size:12px;color:rgba(255,255,255,0.18);pointer-events:none;z-index:15;}
@@ -396,48 +399,51 @@ body { font-family:-apple-system,'SF Pro Display','Segoe UI',system-ui,sans-seri
 </div>
 
 <!-- ══ LEADERBOARD MODAL ══ -->
-<div id="lb-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(2,4,14,0.88);backdrop-filter:blur(32px);align-items:center;justify-content:center;">
+<div id="lb-modal" style="display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
   <div style="
     position:relative;width:calc(100% - 24px);max-width:500px;max-height:92vh;overflow-y:auto;
     border-radius:36px;
-    background:linear-gradient(145deg,rgba(255,255,255,0.16) 0%,rgba(255,255,255,0.04) 35%,rgba(200,210,255,0.05) 70%,rgba(255,255,255,0.09) 100%);
-    backdrop-filter:blur(70px) saturate(240%) brightness(1.1);
-    -webkit-backdrop-filter:blur(70px) saturate(240%) brightness(1.1);
-    border-top:1.5px solid rgba(255,255,255,0.6);
-    border-left:1.5px solid rgba(255,255,255,0.4);
-    border-right:1.5px solid rgba(255,255,255,0.1);
-    border-bottom:1.5px solid rgba(255,255,255,0.08);
-    box-shadow:0 40px 100px rgba(0,0,0,0.6),0 10px 30px rgba(0,0,0,0.4),inset 0 1.5px 0 rgba(255,255,255,0.5),inset 1px 0 0 rgba(255,255,255,0.22),inset -1px 0 0 rgba(255,255,255,0.05);
-    padding:36px 28px 32px;
+    background:rgba(210,215,230,0.2);
+    backdrop-filter:blur(80px) saturate(160%) brightness(1.65);
+    -webkit-backdrop-filter:blur(80px) saturate(160%) brightness(1.65);
+    border:none;
+    outline:1.5px solid rgba(255,255,255,0.55);
+    box-shadow:
+      0 2px 0 rgba(255,255,255,0.9),
+      0 40px 100px rgba(0,0,0,0.65),
+      0 16px 40px rgba(0,0,0,0.45),
+      inset 0 2px 0 rgba(255,255,255,1),
+      inset 0 -1px 0 rgba(255,255,255,0.12),
+      inset 1.5px 0 0 rgba(255,255,255,0.65),
+      inset -1px 0 0 rgba(255,255,255,0.12);
+    padding:36px 24px 28px;
+    overflow:hidden;
   ">
-    <!-- top reflection -->
-    <div style="position:absolute;top:0;left:8%;right:8%;height:40%;background:linear-gradient(180deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0.04) 60%,transparent 100%);border-radius:36px 36px 60% 60%;pointer-events:none;"></div>
+    <!-- curved top reflection -->
+    <div style="position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,0.5) 0%,rgba(255,255,255,0.14) 25%,rgba(255,255,255,0.03) 60%,transparent 100%);border-radius:36px 36px 50% 50% / 36px 36px 30px 30px;pointer-events:none;z-index:0;"></div>
+    <!-- bottom shadow -->
+    <div style="position:absolute;bottom:0;left:0;right:0;height:28%;background:linear-gradient(0deg,rgba(0,0,0,0.2) 0%,transparent 100%);border-radius:0 0 36px 36px;pointer-events:none;z-index:0;"></div>
 
     <!-- header -->
-    <div style="text-align:center;margin-bottom:26px;position:relative;">
-      <div style="font-family:'Fredoka One',sans-serif;font-size:11px;letter-spacing:5px;color:rgba(255,255,255,0.4);margin-bottom:6px;" id="lb-date">—</div>
-      <div style="font-family:'Fredoka One',sans-serif;font-size:32px;letter-spacing:3px;color:#fff;text-shadow:0 1px 0 rgba(0,0,0,0.4),0 0 40px rgba(255,255,255,0.2);">HALL OF FAME</div>
-      <div style="font-size:12px;color:rgba(255,255,255,0.3);margin-top:5px;font-family:'Nunito',sans-serif;">Top 5 pilots today</div>
-      <!-- glass divider -->
-      <div style="margin:18px auto 0;width:60%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);"></div>
+    <div style="text-align:center;margin-bottom:24px;position:relative;z-index:1;">
+      <div style="font-family:'Fredoka One',sans-serif;font-size:11px;letter-spacing:5px;color:rgba(255,255,255,0.55);margin-bottom:6px;" id="lb-date">—</div>
+      <div style="font-family:'Fredoka One',sans-serif;font-size:30px;letter-spacing:3px;color:#fff;text-shadow:0 2px 4px rgba(0,0,0,0.5),0 0 20px rgba(255,255,255,0.15);">HALL OF FAME</div>
+      <div style="font-size:12px;color:rgba(255,255,255,0.45);margin-top:5px;font-family:'Nunito',sans-serif;">Top 5 pilots today</div>
+      <div style="margin:16px auto 0;width:55%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.6),transparent);"></div>
     </div>
 
-    <div id="lb-list"></div>
+    <div id="lb-list" style="position:relative;z-index:1;"></div>
 
-    <div style="text-align:center;margin-top:22px;position:relative;">
+    <div style="text-align:center;margin-top:20px;position:relative;z-index:1;">
       <button onclick="closeLeaderboard()" style="
-        background:rgba(255,255,255,0.08);
-        border-top:1px solid rgba(255,255,255,0.4);
-        border-left:1px solid rgba(255,255,255,0.2);
-        border-right:1px solid rgba(255,255,255,0.05);
-        border-bottom:1px solid rgba(255,255,255,0.04);
-        border-radius:14px;padding:11px 32px;
-        color:rgba(255,255,255,0.6);
-        font-family:'Fredoka One',sans-serif;font-size:15px;letter-spacing:1.5px;
+        background:rgba(255,255,255,0.2);
+        outline:1px solid rgba(255,255,255,0.45);
+        border:none;border-radius:18px;padding:12px 36px;
+        color:#fff;font-family:'Fredoka One',sans-serif;font-size:15px;letter-spacing:1.5px;
         cursor:pointer;
-        box-shadow:inset 0 1px 0 rgba(255,255,255,0.2);
-        backdrop-filter:blur(20px);
-        transition:background 0.18s;
+        box-shadow:0 1.5px 0 rgba(255,255,255,0.9),0 6px 20px rgba(0,0,0,0.3),inset 0 1.5px 0 rgba(255,255,255,0.85);
+        text-shadow:0 1px 3px rgba(0,0,0,0.4);
+        transition:transform 0.1s;
       ">CLOSE</button>
     </div>
   </div>
@@ -865,24 +871,26 @@ function renderLB(rows, highlightPlayer){
         ${charSVG(i, (r.player.replace('@','')[0]||'?').toUpperCase())}
       </div>
       <div style="
-        background:linear-gradient(160deg,rgba(255,255,255,0.18) 0%,rgba(255,255,255,0.05) 50%,rgba(200,210,255,0.08) 100%);
-        backdrop-filter:blur(40px) saturate(200%);
-        border-radius:${big?'22px':'18px'};
-        border-top:1.5px solid rgba(255,255,255,0.55);
-        border-left:1.5px solid rgba(255,255,255,0.35);
-        border-right:1.5px solid rgba(255,255,255,0.08);
-        border-bottom:1.5px solid rgba(255,255,255,0.06);
-        box-shadow:0 12px 40px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.4),inset 1px 0 0 rgba(255,255,255,0.15);
+        background:rgba(255,255,255,0.18);
+        backdrop-filter:blur(40px) brightness(1.5);
+        border-radius:${big?'24px':'20px'};
+        border:none;
+        outline:1px solid rgba(255,255,255,0.5);
+        box-shadow:
+          0 1.5px 0 rgba(255,255,255,0.95),
+          0 10px 30px rgba(0,0,0,0.4),
+          inset 0 1.5px 0 rgba(255,255,255,0.9),
+          inset 0 -1px 0 rgba(255,255,255,0.1);
         padding:10px 10px 16px;
         position:relative;overflow:hidden;
       ">
-        <!-- top reflection -->
-        <div style="position:absolute;top:0;left:5%;right:5%;height:45%;background:linear-gradient(180deg,rgba(255,255,255,0.14) 0%,transparent 100%);border-radius:${big?'22px':'18px'} ${big?'22px':'18px'} 50% 50%;pointer-events:none;"></div>
-        ${isYou?`<div style="position:absolute;top:6px;right:8px;background:rgba(255,255,255,0.15);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.3);border-radius:6px;padding:2px 7px;font-size:9px;font-family:'Nunito',sans-serif;font-weight:800;color:rgba(255,255,255,0.9);letter-spacing:1px;">YOU</div>`:''}
-        <div style="font-family:'Fredoka One',sans-serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.5);margin-bottom:2px;position:relative;">${cfg.title}</div>
-        <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:${big?'14px':'12px'};color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;position:relative;text-shadow:0 1px 8px rgba(0,0,0,0.5);">${r.player}</div>
-        <div style="font-family:'Fredoka One',sans-serif;font-size:${big?'22px':'18px'};color:#fff;line-height:1;position:relative;text-shadow:0 0 20px rgba(200,220,255,0.4);">${r.score.toLocaleString()}</div>
-        <div style="font-size:9px;color:rgba(255,255,255,0.28);letter-spacing:2px;margin-top:2px;position:relative;">PTS</div>
+        <!-- reflection -->
+        <div style="position:absolute;top:0;left:5%;right:5%;height:48%;background:linear-gradient(180deg,rgba(255,255,255,0.45) 0%,rgba(255,255,255,0.08) 60%,transparent 100%);border-radius:${big?'24px':'20px'} ${big?'24px':'20px'} 50% 50%;pointer-events:none;"></div>
+        ${isYou?`<div style="position:absolute;top:6px;right:8px;background:rgba(255,255,255,0.25);outline:1px solid rgba(255,255,255,0.6);border-radius:6px;padding:2px 7px;font-size:9px;font-family:'Nunito',sans-serif;font-weight:800;color:#fff;letter-spacing:1px;text-shadow:0 1px 2px rgba(0,0,0,0.3);">YOU</div>`:''}
+        <div style="font-family:'Fredoka One',sans-serif;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.6);margin-bottom:2px;position:relative;text-shadow:0 1px 3px rgba(0,0,0,0.4);">${cfg.title}</div>
+        <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:${big?'14px':'12px'};color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:6px;position:relative;text-shadow:0 1px 4px rgba(0,0,0,0.5);">${r.player}</div>
+        <div style="font-family:'Fredoka One',sans-serif;font-size:${big?'24px':'19px'};color:#fff;line-height:1;position:relative;text-shadow:0 2px 6px rgba(0,0,0,0.45);">${r.score.toLocaleString()}</div>
+        <div style="font-size:9px;color:rgba(255,255,255,0.4);letter-spacing:2px;margin-top:2px;position:relative;">PTS</div>
       </div>
     </div>`;
   }

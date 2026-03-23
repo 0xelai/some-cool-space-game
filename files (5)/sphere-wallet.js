@@ -1,5 +1,5 @@
 // Space Jumper — Sphere Wallet Integration
-// Based on @unicitylabs/sphere-sdk (same pattern as Boxy-Run)
+// Based on @unicitylabs/sphere-sdk
 
 const WALLET_URL = 'https://sphere.unicity.network';
 const GAME_WALLET_ADDRESS = '@elaiii';

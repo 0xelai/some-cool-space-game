@@ -116,15 +116,11 @@ function fullyDisconnectLocal() {
 }
 
 async function ensureClient() {
-  if (!client) {
-    throw new Error("Not connected");
-  }
-
   if (popupMode && (!popupWindow || popupWindow.closed)) {
-    throw new Error("Wallet popup was closed. Reconnect and keep it open.");
+    throw new Error("Wallet popup is closed");
   }
-
-  return client;
+  if (client) return client;
+  throw new Error("Not connected");
 }
 
 async function refreshBalance() {
@@ -200,9 +196,7 @@ async function connectViaExtension() {
   updateUI("connected");
 }
 
-async function connectViaPopup() {
-  popupMode = true;
-
+async function openPopupWindow() {
   if (!popupWindow || popupWindow.closed) {
     popupWindow = window.open(
       `${WALLET_URL}/connect?origin=${encodeURIComponent(location.origin)}`,
@@ -216,6 +210,14 @@ async function connectViaPopup() {
   } else {
     popupWindow.focus();
   }
+
+  return popupWindow;
+}
+
+async function buildPopupClient({ silent = false } = {}) {
+  popupMode = true;
+
+  await openPopupWindow();
 
   destroyTransport();
 
@@ -236,9 +238,15 @@ async function connectViaPopup() {
       url: location.origin,
     },
     resumeSessionId,
+    silent,
   });
 
-  const result = await client.connect();
+  return client;
+}
+
+async function connectViaPopup() {
+  const c = await buildPopupClient({ silent: false });
+  const result = await c.connect();
 
   if (result?.sessionId) {
     sessionStorage.setItem(SESSION_KEY_POPUP, result.sessionId);
@@ -290,6 +298,21 @@ async function disconnect() {
   fullyDisconnectLocal();
 }
 
+async function ensurePopupReadyForIntent() {
+  if (!popupMode) {
+    return ensureClient();
+  }
+
+  if (!sessionStorage.getItem(SESSION_KEY_POPUP)) {
+    throw new Error("No popup session found. Please reconnect.");
+  }
+
+  // Rebuild popup client every time before a wallet-confirmed action.
+  // This avoids stale popup targets causing blank wallet windows.
+  const c = await buildPopupClient({ silent: true });
+  return c;
+}
+
 async function deposit() {
   if (!state.isConnected) {
     setError("Not connected");
@@ -312,12 +335,9 @@ async function deposit() {
   try {
     updateUI("depositing");
 
-    const c = await ensureClient();
+    const c = popupMode ? await ensurePopupReadyForIntent() : await ensureClient();
 
-    if (popupMode && popupWindow && !popupWindow.closed) {
-      popupWindow.focus();
-    }
-
+    // Native coin send — do not force coinId for UCT
     await c.intent("send", {
       recipient: GAME_WALLET_ADDRESS,
       amount: ENTRY_FEE,
@@ -443,9 +463,11 @@ function startPopupCloseWatcher() {
 
   setInterval(() => {
     if (popupMode && popupWindow && popupWindow.closed) {
+      client = null;
+      destroyTransport();
       popupWindow = null;
       if (state.isConnected) {
-        setError("Wallet popup was closed. Reconnect and keep it open.");
+        setError("Wallet popup was closed. Reconnect to continue.");
         updateUI("connected");
       }
     }
@@ -455,6 +477,8 @@ function startPopupCloseWatcher() {
 async function trySilentAutoConnect() {
   try {
     if (isInIframe()) {
+      await waitForHostReady(5000);
+
       popupMode = false;
       destroyTransport();
 
@@ -504,7 +528,23 @@ async function trySilentAutoConnect() {
       return;
     } catch {}
 
-    fullyDisconnectLocal();
+    const savedSession = sessionStorage.getItem(SESSION_KEY_POPUP);
+    if (savedSession) {
+      const c = await buildPopupClient({ silent: true });
+      const result = await c.connect();
+
+      if (result?.sessionId) {
+        sessionStorage.setItem(SESSION_KEY_POPUP, result.sessionId);
+      }
+
+      state.isConnected = true;
+      state.identity = result.identity;
+      state.permissions = result.permissions || [];
+      clearError();
+      await refreshBalance();
+      updateUI("connected");
+      return;
+    }
   } catch {
     fullyDisconnectLocal();
   }
@@ -550,7 +590,7 @@ window.SphereWallet = {
     return c.query(method, params);
   },
   async intent(action, params) {
-    const c = await ensureClient();
+    const c = popupMode ? await ensurePopupReadyForIntent() : await ensureClient();
     return c.intent(action, params);
   },
   resetDeposit() {

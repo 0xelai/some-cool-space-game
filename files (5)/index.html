@@ -256,8 +256,7 @@ body { font-family:'Press Start 2P',monospace; overflow:hidden; height:100vh; ba
 <div id="menu-screen">
 
   <!-- LEADERBOARD BUTTON — top right -->
-  <button onclick="openLeaderboard()" 
-style="position:absolute;top:16px;right:16px;z-index:20;
+  <button onclick="openLeaderboard()" style="position:absolute;top:16px;right:16px;z-index:20;
     background:linear-gradient(180deg,#9080e8 0%,#6050c0 45%,#3a2890 100%);
     border:2px solid #8070d0;border-bottom:4px solid #1a1050;
     border-radius:8px;padding:10px 14px;
@@ -385,7 +384,7 @@ style="position:absolute;top:16px;right:16px;z-index:20;
 </div>
 
 <!-- Load wallet FIRST -->
-<script src="sphere-wallet.js"></script>
+<script type="module" src="sphere-wallet.js"></script>
 
 <script>
 /* ════════════════════════════════════════
@@ -471,8 +470,7 @@ const SFX = (() => {
     const buf=c.createBuffer(1,c.sampleRate*0.18,c.sampleRate);
     const d=buf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
     const src=c.createBufferSource(),g0=c.createGain();
-    src.buffer=buf;src.connect(g0);g0.connect(c.destination);g0.gain.value=0.35;
-    src.start();
+    src.buffer=buf;src.connect(g0);g0.connect(c.destination);g0.gain.value=0.35;src.start();
     // low thud
     const o=c.createOscillator(),g=c.createGain();
     o.connect(g);g.connect(c.destination);o.type='sine';
@@ -568,6 +566,8 @@ const SFX = (() => {
     menuNodes=[];
   }
 
+
+
   function toggleMute(){
     muted=!muted;
     sessionStorage.setItem('sj-muted', String(muted));
@@ -620,7 +620,7 @@ const SB_URL  = 'https://sknqhazefnczusegfdyi.supabase.co';
 const SB_KEY  = 'sb_publishable_h942Kq8qPHPZng9ZV-ZV6w_6Ol8swgx';
 const SB_HDR  = { 'Content-Type':'application/json', 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY };
 
-/* Get today's date range (UTC) */
+// Get today's date range (UTC)
 function todayRange(){
   const now = new Date();
   const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
@@ -697,7 +697,7 @@ function charSVG(rank, initial){
       <rect x="36" y="106" width="10" height="8" rx="2" fill="#4060ff"/><rect x="74" y="106" width="10" height="8" rx="2" fill="#4060ff"/>
       <rect x="38" y="118" width="8" height="16" rx="4" fill="#0a2080"/><rect x="74" y="118" width="8" height="16" rx="4" fill="#0a2080"/>
       <circle cx="60" cy="86" r="20" fill="#e8c090"/>
-      <circle cx="60" cy="86" r="18" fill="#f0cca0"/>
+      <circle cx="60" cy="86" r="16" fill="#f0cca0"/>
       <ellipse cx="53" cy="83" rx="3.5" ry="4" fill="#fff"/><ellipse cx="67" cy="83" rx="3.5" ry="4" fill="#fff"/>
       <circle cx="53" cy="84" r="2" fill="#1a1a3a"/><circle cx="67" cy="84" r="2" fill="#1a1a3a"/>
       <path d="M54,93 Q60,98 66,93" stroke="#c09060" stroke-width="1.5" fill="none" stroke-linecap="round"/>
@@ -1336,9 +1336,7 @@ function drawParts(){
 function rr(c,x,y,w,h,r){
   c.beginPath();c.moveTo(x+r,y);c.lineTo(x+w-r,y);c.quadraticCurveTo(x+w,y,x+w,y+r);c.lineTo(x+w,y+h-r);c.quadraticCurveTo(x+w,y+h,x+w-r,y+h);c.lineTo(x+r,y+h);c.quadraticCurveTo(x,y+h,x,y+h-r);c.lineTo(x,y+r);c.quadraticCurveTo(x,y,x+r,y);c.closePath();
 }
-function loop(){ 
-update();drawBg();drawPFs();drawCoins();drawObs();drawPlayer();drawParts(); 
-animId=requestAnimationFrame(loop); }
+function loop(){ update();drawBg();drawPFs();drawCoins();drawObs();drawPlayer();drawParts(); animId=requestAnimationFrame(loop); }
 
 /* ── INPUT ── */
 function doJump(){
@@ -1381,7 +1379,8 @@ function startGame(){
   document.getElementById('game-overlay').style.display='none';
   document.getElementById('menu-screen').style.display='none';
   document.getElementById('game-screen').style.display='flex';
-  document.getElementById('hud-addr').textContent=window.SphereWallet?.identity?.nametag || 'DEMO';
+  document.getElementById('hud-addr').textContent=
+    window.SphereWallet?.identity?.nametag || 'DEMO';
   if(animId)cancelAnimationFrame(animId);
   updLives(); loop();
   if(window.SphereWallet?.isConnected) window.SphereWallet.updateUI('playing');

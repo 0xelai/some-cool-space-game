@@ -1,29 +1,32 @@
 // Space Jumper — Sphere Wallet Integration
-// Rewritten to make the popup handshake more reliable
+// Static-site friendly version with improved handshake handling
 
-const WALLET_ORIGIN       = 'https://sphere.unicity.network';
+const WALLET_ORIGIN = 'https://sphere.unicity.network';
+const WALLET_URL = `${WALLET_ORIGIN}/connect?origin=${encodeURIComponent(window.location.origin)}`;
+
 const GAME_WALLET_ADDRESS = '@elaiii';
-const ENTRY_FEE           = 10;
-const COIN_ID             = 'UCT';
-const UCT_COIN_ID_HEX     = '455ad8720656b08e8dbd5bac1f3c73eeea5431565f6c1c3af742b1aa12d41d89';
-const UCT_DECIMALS        = 18;
-const FAUCET_URL          = 'https://faucet.unicity.network/api/v1/faucet/request';
-const SESSION_KEY         = 'spacejumper-sphere-session';
-const DEPOSIT_KEY         = 'spacejumper-deposit-paid';
+const ENTRY_FEE = 10;
+const COIN_ID = 'UCT';
+const SESSION_KEY = 'spacejumper-sphere-session';
+const DEPOSIT_KEY = 'spacejumper-deposit-paid';
+
+const READY_EVENTS = new Set([
+  'sphere-connect:host-ready',
+  'HOST_READY',
+  'SPHERE_HOST_READY'
+]);
 
 const state = {
-  isConnected:   false,
+  isConnected: false,
   isDepositPaid: false,
-  identity:      null,
-  balance:       null,
-  error:         null,
+  identity: null,
+  balance: null,
+  error: null
 };
 
 let popupWindow = null;
 let pendingReqs = {};
 let reqCounter = 1;
-let uctCoinId = null;
-let uctDecimals = UCT_DECIMALS;
 let msgListener = null;
 
 let readyPingInterval = null;
@@ -33,21 +36,6 @@ let connectInFlight = false;
 
 function log(...args) {
   console.log('[SphereWallet]', ...args);
-}
-
-// ─────────────────────────────────────────────────────────────
-// helpers
-// ─────────────────────────────────────────────────────────────
-function getConnectUrl() {
-  return `${WALLET_ORIGIN}/connect?origin=${encodeURIComponent(location.origin)}`;
-}
-
-function isLocalhost() {
-  return (
-    location.hostname === 'localhost' ||
-    location.hostname === '127.0.0.1' ||
-    location.hostname === '0.0.0.0'
-  );
 }
 
 function clearPendingReqs(reason = 'Cancelled') {
@@ -93,7 +81,7 @@ function rpc(method, params = {}, timeoutMs = 60000) {
       jsonrpc: '2.0',
       id,
       method,
-      params,
+      params
     });
 
     setTimeout(() => {
@@ -105,25 +93,21 @@ function rpc(method, params = {}, timeoutMs = 60000) {
   });
 }
 
-// ─────────────────────────────────────────────────────────────
-// message handling
-// ─────────────────────────────────────────────────────────────
 function startListening() {
   if (msgListener) return;
 
   msgListener = (event) => {
     if (event.origin !== WALLET_ORIGIN) return;
-    if (popupWindow && event.source && event.source !== popupWindow) {
-      // ignore stray messages from other windows
-      return;
-    }
+    if (popupWindow && event.source && event.source !== popupWindow) return;
 
     const d = event.data;
     if (!d) return;
 
     log('wallet message:', d);
 
-    if (d.type === 'SPHERE_HOST_READY' || d.type === 'HOST_READY') {
+    const type = typeof d === 'object' ? d.type : null;
+
+    if (type && READY_EVENTS.has(type)) {
       hostReadyReceived = true;
       stopReadyPing();
       clearConnectTimeout();
@@ -131,8 +115,7 @@ function startListening() {
       return;
     }
 
-    if (d.type === 'SPHERE_DISCONNECT' || d.type === 'DISCONNECT') {
-      log('wallet requested disconnect');
+    if (type === 'SPHERE_DISCONNECT' || type === 'DISCONNECT' || type === 'sphere-connect:disconnect') {
       disconnect();
       return;
     }
@@ -159,25 +142,34 @@ function stopListening() {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// handshake
-// ─────────────────────────────────────────────────────────────
 function startReadyPing() {
   stopReadyPing();
 
   readyPingInterval = setInterval(() => {
     if (!popupWindow || popupWindow.closed || hostReadyReceived) return;
 
-    log('sending DAPP_READY');
+    // Keep both forms to maximize compatibility with current/older wallet flows
     sendToWallet({
       type: 'DAPP_READY',
-      origin: location.origin,
+      origin: window.location.origin,
       dapp: {
         name: 'Space Jumper',
         description: 'Pay 10 UCT to play',
-        url: location.origin,
-      },
+        url: window.location.origin
+      }
     });
+
+    sendToWallet({
+      type: 'sphere-connect:dapp-ready',
+      origin: window.location.origin,
+      dapp: {
+        name: 'Space Jumper',
+        description: 'Pay 10 UCT to play',
+        url: window.location.origin
+      }
+    });
+
+    log('sent ready ping');
   }, 700);
 }
 
@@ -186,10 +178,7 @@ function startConnectTimeout() {
 
   connectTimeout = setTimeout(() => {
     if (!hostReadyReceived) {
-      state.error =
-        isLocalhost()
-          ? 'Sphere wallet did not approve this localhost origin. Deploy the game to a real URL and try again.'
-          : 'Wallet popup opened, but no ready signal came back. Please close the popup and try again.';
+      state.error = 'Wallet popup opened, but no ready signal came back.';
       updateUI('disconnected');
       cleanupHandshake();
     }
@@ -207,9 +196,9 @@ async function doConnect() {
       dapp: {
         name: 'Space Jumper',
         description: 'Pay 10 UCT to play',
-        url: location.origin,
+        url: window.location.origin
       },
-      sessionId: resume,
+      sessionId: resume
     });
 
     log('sphere_connect result:', result);
@@ -222,17 +211,9 @@ async function doConnect() {
       sessionStorage.setItem(SESSION_KEY, result.sessionId);
     }
 
-    if (!state.identity?.nametag) {
-      state.error = 'No Unicity ID found. Please register one in Sphere.';
-      updateUI('connected');
-      cleanupHandshake();
-      return;
-    }
-
     await refreshBalance();
 
     if (sessionStorage.getItem(DEPOSIT_KEY)) {
-      sessionStorage.removeItem(DEPOSIT_KEY);
       state.isDepositPaid = true;
       updateUI('ready');
     } else {
@@ -249,9 +230,6 @@ async function doConnect() {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// public connect / disconnect
-// ─────────────────────────────────────────────────────────────
 async function connect() {
   state.error = null;
   updateUI('connecting');
@@ -260,7 +238,7 @@ async function connect() {
   try {
     if (!popupWindow || popupWindow.closed) {
       popupWindow = window.open(
-        getConnectUrl(),
+        WALLET_URL,
         'sphere-wallet',
         'width=430,height=660,left=200,top=80'
       );
@@ -289,7 +267,7 @@ async function disconnect() {
       jsonrpc: '2.0',
       id: String(reqCounter++),
       method: 'sphere_disconnect',
-      params: {},
+      params: {}
     });
   } catch {}
 
@@ -306,20 +284,15 @@ async function disconnect() {
   sessionStorage.removeItem(SESSION_KEY);
   sessionStorage.removeItem(DEPOSIT_KEY);
 
-  Object.assign(state, {
-    isConnected: false,
-    isDepositPaid: false,
-    identity: null,
-    balance: null,
-    error: null,
-  });
+  state.isConnected = false;
+  state.isDepositPaid = false;
+  state.identity = null;
+  state.balance = null;
+  state.error = null;
 
   updateUI('disconnected');
 }
 
-// ─────────────────────────────────────────────────────────────
-// balance + payment
-// ─────────────────────────────────────────────────────────────
 async function refreshBalance() {
   if (!state.isConnected) return;
 
@@ -329,15 +302,7 @@ async function refreshBalance() {
 
     if (Array.isArray(assets)) {
       const uct = assets.find((a) => a.symbol === COIN_ID);
-
-      if (uct) {
-        uctCoinId = uct.coinId || UCT_COIN_ID_HEX;
-        uctDecimals = uct.decimals || UCT_DECIMALS;
-        state.balance = Number(uct.totalAmount) / Math.pow(10, uctDecimals);
-      } else {
-        uctCoinId = UCT_COIN_ID_HEX;
-        state.balance = 0;
-      }
+      state.balance = uct ? Number(uct.totalAmount) / Math.pow(10, uct.decimals || 18) : 0;
     }
   } catch (e) {
     console.error('Balance fetch failed:', e);
@@ -348,12 +313,6 @@ async function deposit() {
   if (!state.isConnected) {
     state.error = 'Not connected';
     updateUI('disconnected');
-    return false;
-  }
-
-  if (!state.identity?.nametag) {
-    state.error = 'Unicity ID required. Register one in Sphere.';
-    updateUI('connected');
     return false;
   }
 
@@ -369,8 +328,8 @@ async function deposit() {
     const result = await rpc('sphere_sendTransaction', {
       to: GAME_WALLET_ADDRESS,
       amount: String(ENTRY_FEE),
-      coinId: uctCoinId || UCT_COIN_ID_HEX,
-      memo: 'Space Jumper entry fee',
+      coinId: COIN_ID,
+      memo: 'Space Jumper entry fee'
     });
 
     log('sphere_sendTransaction result:', result);
@@ -378,6 +337,7 @@ async function deposit() {
     state.isDepositPaid = true;
     state.error = null;
 
+    sessionStorage.setItem(DEPOSIT_KEY, 'true');
     await refreshBalance();
     updateUI('ready');
     return true;
@@ -392,39 +352,11 @@ async function deposit() {
 
 async function depositAndRestart() {
   const ok = await deposit();
-
   if (ok) {
-    sessionStorage.setItem(DEPOSIT_KEY, 'true');
-    document.location.reload();
+    window.location.reload();
   }
 }
 
-async function requestPayout(coins) {
-  if (coins <= 0 || !state.identity) return false;
-
-  const unicityId = (state.identity.nametag || '').replace(/^@/, '');
-  if (!unicityId) return false;
-
-  try {
-    const r = await fetch(FAUCET_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        unicityId,
-        coin: 'unicity',
-        amount: coins,
-      }),
-    });
-
-    return r.ok;
-  } catch {
-    return false;
-  }
-}
-
-// ─────────────────────────────────────────────────────────────
-// ui
-// ─────────────────────────────────────────────────────────────
 function updateUI(phase) {
   const connectBtn = document.getElementById('sphere-connect-btn');
   const walletInfo = document.getElementById('sphere-wallet-info');
@@ -449,14 +381,8 @@ function updateUI(phase) {
   }
 
   if (state.isConnected) {
-    if (walletAddress) {
-      walletAddress.textContent = state.identity?.nametag || 'Connected';
-    }
-
-    if (walletBalance) {
-      walletBalance.textContent =
-        state.balance !== null ? `${state.balance} ${COIN_ID}` : '...';
-    }
+    if (walletAddress) walletAddress.textContent = state.identity?.nametag || 'Connected';
+    if (walletBalance) walletBalance.textContent = state.balance !== null ? `${state.balance} ${COIN_ID}` : '...';
   }
 
   switch (phase) {
@@ -478,7 +404,7 @@ function updateUI(phase) {
       if (walletInfo) walletInfo.style.display = 'block';
       if (disconnectBtn) disconnectBtn.style.display = 'inline-block';
 
-      if (state.identity?.nametag && depositBtn) {
+      if (depositBtn) {
         depositBtn.style.display = 'block';
         depositBtn.innerHTML = `PLAY <span class="uct-badge">${ENTRY_FEE} ${COIN_ID}</span>`;
         depositBtn.disabled = false;
@@ -487,7 +413,6 @@ function updateUI(phase) {
 
     case 'depositing':
       if (walletInfo) walletInfo.style.display = 'block';
-
       if (depositBtn) {
         depositBtn.style.display = 'block';
         depositBtn.innerHTML = 'CONFIRMING…';
@@ -498,13 +423,9 @@ function updateUI(phase) {
     case 'ready':
       if (walletInfo) walletInfo.style.display = 'block';
       if (disconnectBtn) disconnectBtn.style.display = 'inline-block';
-
       if (menuScreen) menuScreen.style.display = 'none';
       if (gameScreen) gameScreen.style.display = 'flex';
-
-      if (window._onWalletReady) {
-        window._onWalletReady();
-      }
+      if (window._onWalletReady) window._onWalletReady();
       break;
 
     case 'playing':
@@ -513,7 +434,6 @@ function updateUI(phase) {
 
     case 'gameover':
       if (walletInfo) walletInfo.style.display = 'block';
-
       if (depositBtn) {
         depositBtn.style.display = 'block';
         depositBtn.innerHTML = `PLAY AGAIN <span class="uct-badge">${ENTRY_FEE} ${COIN_ID}</span>`;
@@ -523,9 +443,6 @@ function updateUI(phase) {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// boot
-// ─────────────────────────────────────────────────────────────
 window.addEventListener('load', () => {
   document.getElementById('sphere-connect-btn')?.addEventListener('click', connect);
   document.getElementById('sphere-deposit-btn')?.addEventListener('click', depositAndRestart);
@@ -542,7 +459,6 @@ window.addEventListener('load', () => {
   }
 });
 
-// if popup is manually closed during an active session, disconnect cleanly
 setInterval(() => {
   if ((state.isConnected || connectInFlight) && popupWindow && popupWindow.closed) {
     state.error = state.isConnected ? null : 'Wallet popup was closed.';
@@ -550,28 +466,23 @@ setInterval(() => {
   }
 }, 1000);
 
-// ─────────────────────────────────────────────────────────────
-// global api
-// ─────────────────────────────────────────────────────────────
 window.SphereWallet = {
-  get isConnected()   { return state.isConnected; },
+  get isConnected() { return state.isConnected; },
   get isDepositPaid() { return state.isDepositPaid; },
-  get identity()      { return state.identity; },
-  get balance()       { return state.balance; },
-  get error()         { return state.error; },
-  get entryFee()      { return ENTRY_FEE; },
-  get coinId()        { return COIN_ID; },
+  get identity() { return state.identity; },
+  get balance() { return state.balance; },
+  get error() { return state.error; },
+  get entryFee() { return ENTRY_FEE; },
+  get coinId() { return COIN_ID; },
 
   connect,
   disconnect,
   deposit,
   depositAndRestart,
-  requestPayout,
   refreshBalance,
-  updateUI,
 
   resetDeposit() {
     state.isDepositPaid = false;
     sessionStorage.removeItem(DEPOSIT_KEY);
-  },
+  }
 };

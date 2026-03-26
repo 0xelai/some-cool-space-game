@@ -16,16 +16,13 @@ const COIN_ID = "UCT";
 const UCT_COIN_ID_HEX = "455ad8720656b08e8dbd5bac1f3c73eeea5431565f6c1c3af742b1aa12d41d89";
 const UCT_DECIMALS = 18;
 const FAUCET_URL = "https://faucet.unicity.network/api/v1/faucet/request";
-const SESSION_KEY_POPUP = "sphere-connect-popup-session";
-const DEPOSIT_KEY = "spacejumper-deposit-paid";
+const SESSION_KEY = "spacejumper-sphere-session";
 
 const state = {
   isConnected: false,
   isConnecting: false,
-  isDepositPaid: false,   // ← FIXED: was missing
-  isWalletLocked: false,
+  isDepositPaid: false,
   identity: null,
-  permissions: [],
   balance: null,
   error: null,
 };
@@ -33,7 +30,6 @@ const state = {
 let client = null;
 let transport = null;
 let popupWindow = null;
-let popupMode = false;
 let uctCoinId = null;
 let uctDecimals = UCT_DECIMALS;
 
@@ -41,7 +37,7 @@ function isInIframe() {
   try { return window.self !== window.top; } catch { return true; }
 }
 
-function ui() {
+function u() {
   return {
     connectBtn:    document.getElementById("sphere-connect-btn"),
     walletInfo:    document.getElementById("sphere-wallet-info"),
@@ -55,128 +51,124 @@ function ui() {
   };
 }
 
-function clearError() { state.error = null; }
-
-function waitForHostReady(timeoutMs = HOST_READY_TIMEOUT) {
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => {
-      window.removeEventListener("message", handler);
-      reject(new Error("Wallet popup did not become ready in time"));
-    }, timeoutMs);
-    function handler(event) {
-      if (event.data?.type === HOST_READY_TYPE) {
-        clearTimeout(timeout);
-        window.removeEventListener("message", handler);
-        resolve();
-      }
-    }
-    window.addEventListener("message", handler);
-  });
-}
-
 function destroyTransport() {
   try { transport?.destroy?.(); } catch {}
   transport = null;
 }
 
-function fullyDisconnectLocal() {
+function resetState() {
   destroyTransport();
   client = null;
   state.isConnected = false;
   state.isConnecting = false;
   state.isDepositPaid = false;
-  state.isWalletLocked = false;
   state.identity = null;
-  state.permissions = [];
   state.balance = null;
   state.error = null;
-  popupMode = false;
   try { popupWindow?.close?.(); } catch {}
   popupWindow = null;
-  sessionStorage.removeItem(SESSION_KEY_POPUP);
-  sessionStorage.removeItem(DEPOSIT_KEY);
-  updateUI("disconnected");
+  sessionStorage.removeItem(SESSION_KEY);
 }
 
-async function ensureClient() {
-  if (client && !popupMode) return client;
-  if (client && popupMode && popupWindow && !popupWindow.closed) return client;
-  if (popupMode && (!popupWindow || popupWindow.closed)) {
-    fullyDisconnectLocal();
-    throw new Error("Wallet popup was closed");
-  }
-  throw new Error("Not connected");
+// ── Wait for popup HOST_READY ──────────────────────────────────────────────
+function waitForHostReady(ms = HOST_READY_TIMEOUT) {
+  return new Promise((resolve, reject) => {
+    const t = setTimeout(() => {
+      window.removeEventListener("message", h);
+      reject(new Error("Wallet did not respond. Please try again."));
+    }, ms);
+    function h(e) {
+      if (e.data?.type === HOST_READY_TYPE) {
+        clearTimeout(t);
+        window.removeEventListener("message", h);
+        resolve();
+      }
+    }
+    window.addEventListener("message", h);
+  });
 }
 
-// ── Connect helpers ────────────────────────────────────────────────────────
-async function connectInsideIframe() {
-  popupMode = false; destroyTransport();
-  transport = PostMessageTransport.forClient();
-  client = new ConnectClient({ transport, dapp: { name:"Space Jumper", description:"Pay 10 UCT to play", url: location.origin } });
-  const result = await client.connect();
-  state.isConnected = true; state.isConnecting = false;
-  state.identity = result.identity; state.permissions = result.permissions || [];
+// ── After successful connect ───────────────────────────────────────────────
+async function onConnected(result) {
+  state.isConnected = true;
+  state.isConnecting = false;
+  state.identity = result.identity;
   state.error = null;
-  await refreshBalance();
-  handlePostConnect();
-}
+  if (result.sessionId) sessionStorage.setItem(SESSION_KEY, result.sessionId);
 
-async function connectViaExtension() {
-  popupMode = false; destroyTransport();
-  transport = ExtensionTransport.forClient();
-  client = new ConnectClient({ transport, dapp: { name:"Space Jumper", description:"Pay 10 UCT to play", url: location.origin } });
-  const result = await client.connect();
-  state.isConnected = true; state.isConnecting = false;
-  state.identity = result.identity; state.permissions = result.permissions || [];
-  state.error = null;
-  await refreshBalance();
-  handlePostConnect();
-}
-
-async function connectViaPopup() {
-  popupMode = true;
-  if (!popupWindow || popupWindow.closed) {
-    popupWindow = window.open(
-      WALLET_URL + "/connect?origin=" + encodeURIComponent(location.origin),
-      "sphere-wallet", "width=420,height=650"
-    );
-    if (!popupWindow) throw new Error("Popup blocked. Please allow popups for this site.");
-  } else {
-    popupWindow.focus();
-  }
-  destroyTransport();
-  transport = PostMessageTransport.forClient({ target: popupWindow, targetOrigin: WALLET_URL });
-  await waitForHostReady();
-  const resumeSessionId = sessionStorage.getItem(SESSION_KEY_POPUP) ?? undefined;
-  client = new ConnectClient({ transport, dapp: { name:"Space Jumper", description:"Pay 10 UCT to play", url: location.origin }, resumeSessionId });
-  const result = await client.connect();
-  if (result?.sessionId) sessionStorage.setItem(SESSION_KEY_POPUP, result.sessionId);
-  state.isConnected = true; state.isConnecting = false;
-  state.identity = result.identity; state.permissions = result.permissions || [];
-  state.error = null;
-  await refreshBalance();
-  handlePostConnect();
-}
-
-// After connect — check if deposit was already paid (e.g. after page reload)
-function handlePostConnect() {
-  if (sessionStorage.getItem(DEPOSIT_KEY)) {
-    sessionStorage.removeItem(DEPOSIT_KEY);
-    state.isDepositPaid = true;
-    updateUI("ready");
-  } else {
+  if (!state.identity?.nametag) {
+    state.error = "No Unicity ID found. Register one in Sphere to play.";
     updateUI("connected");
+    return;
   }
+
+  await refreshBalance();
+  updateUI("connected");
 }
 
+// ── Connect ────────────────────────────────────────────────────────────────
 async function connect() {
+  if (state.isConnecting) return;
   state.isConnecting = true;
-  clearError();
+  state.error = null;
   updateUI("connecting");
+
   try {
-    if (isInIframe()) { await connectInsideIframe(); return; }
-    try { await connectViaExtension(); return; } catch {}
-    await connectViaPopup();
+    // Try iframe first
+    if (isInIframe()) {
+      destroyTransport();
+      transport = PostMessageTransport.forClient();
+      client = new ConnectClient({ transport, dapp: { name: "Space Jumper", description: "Pay 10 UCT to play", url: location.origin } });
+      const result = await client.connect();
+      await onConnected(result);
+      return;
+    }
+
+    // Try extension (with short timeout so it doesn't hang)
+    try {
+      destroyTransport();
+      transport = ExtensionTransport.forClient();
+      client = new ConnectClient({ transport, dapp: { name: "Space Jumper", description: "Pay 10 UCT to play", url: location.origin } });
+      const result = await Promise.race([
+        client.connect(),
+        new Promise((_, rej) => setTimeout(() => rej(new Error("no extension")), 2000))
+      ]);
+      await onConnected(result);
+      return;
+    } catch {
+      destroyTransport();
+      client = null;
+    }
+
+    // Popup mode
+    if (!popupWindow || popupWindow.closed) {
+      popupWindow = window.open(
+        WALLET_URL + "/connect?origin=" + encodeURIComponent(location.origin),
+        "sphere-wallet",
+        "width=420,height=650,left=200,top=80"
+      );
+      if (!popupWindow) {
+        throw new Error("Popup blocked. Please allow popups for this site and try again.");
+      }
+    } else {
+      popupWindow.focus();
+    }
+
+    destroyTransport();
+    transport = PostMessageTransport.forClient({ target: popupWindow, targetOrigin: WALLET_URL });
+
+    await waitForHostReady();
+
+    const resume = sessionStorage.getItem(SESSION_KEY) ?? undefined;
+    client = new ConnectClient({
+      transport,
+      dapp: { name: "Space Jumper", description: "Pay 10 UCT to play", url: location.origin },
+      resumeSessionId: resume,
+    });
+
+    const result = await client.connect();
+    await onConnected(result);
+
   } catch (err) {
     state.isConnecting = false;
     state.isConnected = false;
@@ -187,62 +179,63 @@ async function connect() {
 
 async function disconnect() {
   try { await client?.disconnect?.(); } catch {}
-  fullyDisconnectLocal();
+  resetState();
+  updateUI("disconnected");
 }
 
 async function refreshBalance() {
+  if (!client) return;
   try {
-    const c = await ensureClient();
-    const assets = await c.query("sphere_getBalance");
+    const assets = await client.query("sphere_getBalance");
     if (Array.isArray(assets)) {
       const uct = assets.find(a => a.symbol === COIN_ID);
       if (uct) {
-        uctCoinId   = uct.coinId;
+        uctCoinId = uct.coinId;
         uctDecimals = uct.decimals || UCT_DECIMALS;
         state.balance = Number(uct.totalAmount) / Math.pow(10, uctDecimals);
       } else {
-        uctCoinId     = UCT_COIN_ID_HEX;
+        uctCoinId = UCT_COIN_ID_HEX;
         state.balance = 0;
       }
     }
-  } catch (err) { console.error("Balance fetch failed:", err); }
+  } catch (e) { console.error("Balance fetch failed:", e); }
 }
 
-// ── DEPOSIT — fixed params to match Boxy-Run exactly ──────────────────────
+// ── DEPOSIT — NO RELOAD, just set ready ───────────────────────────────────
 async function deposit() {
   if (!state.isConnected) {
-    state.error = "Not connected"; updateUI("disconnected"); return false;
+    state.error = "Not connected";
+    updateUI("disconnected");
+    return false;
   }
   if (!state.identity?.nametag) {
     state.error = "Unicity ID required. Register one in Sphere.";
-    updateUI("connected"); return false;
+    updateUI("connected");
+    return false;
   }
   if (state.balance !== null && state.balance < ENTRY_FEE) {
     state.error = `Not enough balance. Need at least ${ENTRY_FEE} ${COIN_ID}.`;
-    updateUI("connected"); return false;
+    updateUI("connected");
+    return false;
   }
+
   try {
     updateUI("depositing");
-    const c = await ensureClient();
 
-    // ← FIXED: use "to" not "recipient", add memo, use resolved coinId
-    await c.intent("send", {
+    await client.intent("send", {
       to:     GAME_WALLET_ADDRESS,
       amount: ENTRY_FEE,
       coinId: uctCoinId || UCT_COIN_ID_HEX,
       memo:   "Space Jumper entry fee",
     });
 
+    // ✅ NO RELOAD — just mark paid and start game directly
     state.isDepositPaid = true;
     state.error = null;
     await refreshBalance();
-
-    // persist so page reload after payment restores state
-    sessionStorage.setItem(DEPOSIT_KEY, "true");
-
-    // reload — same pattern as Boxy-Run (depositAndRestart)
-    document.location.reload();
+    updateUI("ready");  // this triggers _onWalletReady → startGame()
     return true;
+
   } catch (err) {
     state.error = err?.message || "Payment failed. Please try again.";
     updateUI("connected");
@@ -251,7 +244,7 @@ async function deposit() {
 }
 
 async function depositAndRestart() {
-  await deposit(); // deposit() already reloads on success
+  await deposit();
 }
 
 async function requestPayout(coins) {
@@ -271,7 +264,7 @@ async function requestPayout(coins) {
 // ── UI ─────────────────────────────────────────────────────────────────────
 function updateUI(phase) {
   const { connectBtn, walletInfo, depositBtn, walletBalance, walletAddress,
-          disconnectBtn, errorDiv, menuScreen, gameScreen } = ui();
+          disconnectBtn, errorDiv, menuScreen, gameScreen } = u();
 
   const hideConnect = ["connected","depositing","ready","playing","gameover"].includes(phase);
   if (connectBtn)    connectBtn.style.display    = hideConnect ? "none" : "block";
@@ -308,7 +301,11 @@ function updateUI(phase) {
       break;
     case "depositing":
       if (walletInfo) walletInfo.style.display = "block";
-      if (depositBtn) { depositBtn.style.display = "block"; depositBtn.innerHTML = "CONFIRMING…"; depositBtn.disabled = true; }
+      if (depositBtn) {
+        depositBtn.style.display = "block";
+        depositBtn.innerHTML     = "CONFIRMING…";
+        depositBtn.disabled      = true;
+      }
       break;
     case "ready":
       if (walletInfo)    walletInfo.style.display    = "block";
@@ -332,74 +329,26 @@ function updateUI(phase) {
 }
 
 // ── Boot ──────────────────────────────────────────────────────────────────
-function startPopupCloseWatcher() {
-  setInterval(() => {
-    if (state.isConnected && popupMode && popupWindow && popupWindow.closed) {
-      fullyDisconnectLocal();
-    }
-  }, 1000);
-}
-
-async function trySilentAutoConnect() {
-  try {
-    if (isInIframe()) {
-      try {
-        await waitForHostReady(5000);
-        popupMode = false; destroyTransport();
-        transport = PostMessageTransport.forClient();
-        client = new ConnectClient({ transport, dapp: { name:"Space Jumper", description:"Pay 10 UCT to play", url: location.origin }, silent: true });
-        const result = await client.connect();
-        state.isConnected = true; state.identity = result.identity; state.permissions = result.permissions || [];
-        await refreshBalance(); handlePostConnect(); return;
-      } catch {}
-    }
-
-    // Try extension silently
-    try {
-      popupMode = false; destroyTransport();
-      transport = ExtensionTransport.forClient();
-      client = new ConnectClient({ transport, dapp: { name:"Space Jumper", description:"Pay 10 UCT to play", url: location.origin }, silent: true });
-      const result = await client.connect();
-      state.isConnected = true; state.identity = result.identity; state.permissions = result.permissions || [];
-      await refreshBalance(); handlePostConnect(); return;
-    } catch {}
-
-    // Try popup with saved session
-    const savedSession = sessionStorage.getItem(SESSION_KEY_POPUP);
-    if (savedSession) {
-      popupMode = true;
-      popupWindow = window.open(
-        WALLET_URL + "/connect?origin=" + encodeURIComponent(location.origin),
-        "sphere-wallet", "width=420,height=650"
-      );
-      if (!popupWindow) throw new Error("Popup blocked");
-      destroyTransport();
-      transport = PostMessageTransport.forClient({ target: popupWindow, targetOrigin: WALLET_URL });
-      await waitForHostReady(10000);
-      client = new ConnectClient({ transport, dapp: { name:"Space Jumper", description:"Pay 10 UCT to play", url: location.origin }, resumeSessionId: savedSession, silent: true });
-      const result = await client.connect();
-      if (result?.sessionId) sessionStorage.setItem(SESSION_KEY_POPUP, result.sessionId);
-      state.isConnected = true; state.identity = result.identity; state.permissions = result.permissions || [];
-      await refreshBalance(); handlePostConnect(); return;
-    }
-  } catch {
-    fullyDisconnectLocal();
-  }
-}
-
-window.addEventListener("load", async () => {
+window.addEventListener("load", () => {
   document.getElementById("sphere-connect-btn")?.addEventListener("click", connect);
   document.getElementById("sphere-deposit-btn")?.addEventListener("click", depositAndRestart);
   document.getElementById("sphere-disconnect-btn")?.addEventListener("click", disconnect);
-  startPopupCloseWatcher();
+
+  // Watch for popup being closed while connected
+  setInterval(() => {
+    if (state.isConnected && popupWindow && popupWindow.closed) {
+      resetState();
+      updateUI("disconnected");
+    }
+  }, 1000);
+
   updateUI("disconnected");
-  await trySilentAutoConnect();
 });
 
 // ── Global API ────────────────────────────────────────────────────────────
 window.SphereWallet = {
   get isConnected()   { return state.isConnected; },
-  get isDepositPaid() { return state.isDepositPaid; },  // ← FIXED: was missing
+  get isDepositPaid() { return state.isDepositPaid; },
   get identity()      { return state.identity; },
   get balance()       { return state.balance; },
   get error()         { return state.error; },
@@ -411,16 +360,5 @@ window.SphereWallet = {
   depositAndRestart,
   refreshBalance,
   updateUI,
-  async query(method, params) {
-    const c = await ensureClient();
-    return c.query(method, params);
-  },
-  async intent(action, params) {
-    const c = await ensureClient();
-    return c.intent(action, params);
-  },
-  resetDeposit() {
-    state.isDepositPaid = false;
-    sessionStorage.removeItem(DEPOSIT_KEY);
-  },
+  resetDeposit() { state.isDepositPaid = false; },
 };

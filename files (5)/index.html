@@ -193,20 +193,20 @@ body { font-family:'Press Start 2P',monospace; overflow:hidden; height:100vh; ba
 .ov > *{position:relative;z-index:1;}
 .ov-ttl{
   font-family:'Press Start 2P',monospace;
-  font-size:16px;letter-spacing:2px;
-  color:#e8f4ff;margin-bottom:10px;
+  font-size:14px;letter-spacing:2px;
+  color:#e8f4ff;margin-bottom:14px;
   text-shadow:0 3px 0 #0a1a6a,0 0 20px rgba(100,160,255,0.5);
 }
-.ov-sub{min-height:0;font-size:0;}
+.ov-sub{min-height:0;font-size:0;margin:0;}
 .ov-sc{
   font-family:'Press Start 2P',monospace;
-  font-size:48px;color:#ffe87a;
-  letter-spacing:-2px;line-height:1;
+  font-size:36px;color:#ffe87a;
+  letter-spacing:0;line-height:1.1;
   text-shadow:0 4px 0 #7a4500,0 0 30px rgba(255,200,60,0.4);
 }
 .ov-scl{
-  font-size:8px;color:#4a7aff;
-  margin-bottom:20px;letter-spacing:3px;
+  font-size:7px;color:#4a7aff;
+  margin-top:6px;margin-bottom:18px;letter-spacing:3px;
   font-family:'Press Start 2P',monospace;
 }
 .ov-btns{display:flex;gap:10px;justify-content:center;margin-top:4px;}
@@ -384,7 +384,7 @@ body { font-family:'Press Start 2P',monospace; overflow:hidden; height:100vh; ba
 </div>
 
 <!-- Load wallet FIRST -->
-<script type="module" src="sphere-wallet.js"></script>
+<script src="sphere-wallet.js"></script>
 
 <script>
 /* ════════════════════════════════════════
@@ -958,35 +958,55 @@ function spawnPF(){
 }
 function spawnOb(){
   const t=sr(), sc=S.score;
-  if(t<0.18){
-    // rock — high or low
-    const high=sr()<0.5,ow=26+sr()*22,oh=26+sr()*22;
-    S.obstacles.push({x:W+20,y:high?CEIL+40+sr()*80:380+sr()*80,w:ow,h:oh,type:'rock',spin:0});
-  } else if(t<0.33){
-    // satellite
-    const high=sr()<0.5,ow=30+sr()*18,oh=24+sr()*14;
-    S.obstacles.push({x:W+20,y:high?CEIL+35+sr()*80:360+sr()*90,w:ow,h:oh,type:'sat',spin:0});
-  } else if(t<0.48){
-    // laser pillar (vertical)
-    const fromTop=sr()<0.5,bh=90+sr()*90;
+  const GROUND=460, MID=300, HIGH_Y=CEIL+50;
+
+  if(t<0.14){
+    // rock — 60% ground, 40% high
+    const high=sr()<0.4,ow=26+sr()*22,oh=22+sr()*20;
+    S.obstacles.push({x:W+20,y:high?HIGH_Y+sr()*80:GROUND-oh,w:ow,h:oh,type:'rock',spin:0});
+  } else if(t<0.26){
+    // satellite — 60% ground, 40% high
+    const high=sr()<0.4,ow=30+sr()*18,oh=24+sr()*14;
+    S.obstacles.push({x:W+20,y:high?HIGH_Y+sr()*70:GROUND-oh,w:ow,h:oh,type:'sat',spin:0});
+  } else if(t<0.38){
+    // laser pillar from floor (70%) or ceiling (30%)
+    const fromTop=sr()<0.3,bh=100+sr()*110;
     S.obstacles.push({x:W+18,y:fromTop?CEIL:H-30-bh,w:11,h:bh,type:'laser',spin:0});
-  } else if(t<0.60){
-    // UFO — mid screen, moves up/down
-    S.obstacles.push({x:W+20,y:150+sr()*200,w:44,h:22,type:'ufo',spin:0,vy:1.2*(sr()<0.5?1:-1)});
+  } else if(t<0.47){
+    // UFO sweeping low — stays near ground half the time
+    const lowUFO=sr()<0.5;
+    S.obstacles.push({x:W+20,y:lowUFO?GROUND-60+sr()*40:MID-60+sr()*100,w:44,h:22,type:'ufo',spin:0,vy:1.6*(sr()<0.5?1:-1)});
+  } else if(t<0.55){
+    // double rock — top + ground = forced jump
+    const topY=HIGH_Y+sr()*70;
+    S.obstacles.push({x:W+20,y:topY,w:22,h:22,type:'rock',spin:0});
+    S.obstacles.push({x:W+20,y:GROUND-22,w:22,h:22,type:'rock',spin:sr()*Math.PI*2});
+  } else if(t<0.63){
+    // ground scraper — wide flat, must jump
+    const ow=36+sr()*32,oh=22+sr()*18;
+    S.obstacles.push({x:W+20,y:GROUND-oh,w:ow,h:oh,type:'rock',spin:0});
   } else if(t<0.70){
-    // double rock pair (stacked with gap)
-    const gap=100+sr()*60,topY=CEIL+30+sr()*60;
-    S.obstacles.push({x:W+20,y:topY,w:24,h:24,type:'rock',spin:0});
-    S.obstacles.push({x:W+20,y:topY+gap,w:24,h:24,type:'rock',spin:sr()*Math.PI*2});
-  } else if(t<0.82 && sc>800){
-    // energy ball — fast, small
-    S.obstacles.push({x:W+20,y:120+sr()*340,w:18,h:18,type:'ball',spin:0,pulse:0});
-  } else if(t<0.88 && sc>600){
-    // comet — fast diagonal streak
-    S.obstacles.push({x:W+20,y:CEIL+30+sr()*300,w:28,h:12,type:'comet',spin:0,vy:(sr()-0.5)*1.5});
+    // wall with gap — two laser pillars with a passable hole
+    const gapY=CEIL+60+sr()*220, gapH=120+sr()*50;
+    S.obstacles.push({x:W+14,y:CEIL,w:14,h:gapY-CEIL,type:'laser',spin:0});
+    S.obstacles.push({x:W+14,y:gapY+gapH,w:14,h:H-30-(gapY+gapH),type:'laser',spin:0});
+  } else if(t<0.78){
+    // energy ball — 50% ground hugging
+    const atGround=sr()<0.5;
+    S.obstacles.push({x:W+20,y:atGround?GROUND-18:HIGH_Y+sr()*240,w:18,h:18,type:'ball',spin:0,pulse:0});
+  } else if(t<0.86 && sc>400){
+    // comet aimed at ground 60% of the time
+    const low=sr()<0.6;
+    S.obstacles.push({x:W+20,y:low?GROUND-50+sr()*40:HIGH_Y+sr()*130,w:28,h:12,type:'comet',spin:0,vy:(sr()-0.5)*2.0});
+  } else if(t<0.92 && sc>800){
+    // triple rocks — high, mid, ground — dodge the gap
+    const gap=sr()<0.5?'top':sr()<0.5?'mid':'bot';
+    if(gap!=='top') S.obstacles.push({x:W+20,y:HIGH_Y+sr()*40,w:20,h:20,type:'rock',spin:0});
+    if(gap!=='mid') S.obstacles.push({x:W+20,y:MID-10+sr()*40,w:20,h:20,type:'rock',spin:0});
+    if(gap!=='bot') S.obstacles.push({x:W+20,y:GROUND-20,w:20,h:20,type:'rock',spin:0});
   } else {
-    // wormhole — spinning vortex portal
-    S.obstacles.push({x:W+20,y:CEIL+40+sr()*260,w:32,h:32,type:'wormhole',spin:0});
+    // wormhole — spread across full height
+    S.obstacles.push({x:W+20,y:HIGH_Y+sr()*340,w:32,h:32,type:'wormhole',spin:0});
   }
 }
 function spawnCoin(){ S.coins.push({x:W+20,y:100+sr()*360,r:6,collected:false,bob:sr()*Math.PI*2}); }
@@ -1393,6 +1413,13 @@ function goToMenu(){
   document.getElementById('game-overlay').style.display='none';
   SFX.setOnMenu(true);
   SFX.startMenuMusic();
+  // Reset wallet UI so PLAY button shows again
+  if(window.SphereWallet?.isConnected){
+    window.SphereWallet.resetDeposit();
+    window.SphereWallet.updateUI('connected');
+  } else {
+    window.SphereWallet?.updateUI('disconnected');
+  }
 }
 
 // Called by sphere-wallet.js when deposit is confirmed
@@ -1432,16 +1459,3 @@ S=newState(); updLives();
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
